@@ -1,0 +1,3523 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>經典案例日刊</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%239C4A1B'/%3E%3Ctext x='32' y='44' font-family='system-ui,sans-serif' font-size='32' font-weight='700' fill='%23FAFAF7' text-anchor='middle'%3E例%3C/text%3E%3C/svg%3E">
+<meta name="theme-color" content="#FAFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#10141C" media="(prefers-color-scheme: dark)">
+<style>
+  :root {
+    /* 亮色 */
+    --bg-page:      #FAFAF7;  /* 暖紙底 */
+    --bg-surface:   #FFFFFF;  /* 卡片／面板 */
+    --bg-hover:     #F3F1EC;  /* 清單 hover */
+    --bg-active:    #E9E6DE;  /* 選中卡底（去左線） */
+    --border:       #E4E1D8;
+    --text-1:       #1F2430;  /* 主文（AA 13.2:1） */
+    --text-2:       #5C6470;  /* 次文（AA 6.4:1） */
+    --accent:       #9C4A1B;  /* 強調／連結文字（AA 5.7:1） */
+    --accent-soft:  #C05621;  /* 強調底色／標籤 */
+    --mark-bg:      #FDE68A;  /* 搜尋高亮 */
+    --mark-fg:      #1F2430;  /* mark 高亮上的文字（AA 12.5:1） */
+    --focus:        #9C4A1B;
+    --danger:       #B42318;  /* 刪除／取消（AA 5.9:1） */
+
+    /* 字型：只用系統字族，禁外部字型 */
+    --font-body: "Microsoft JhengHei", "PingFang TC", system-ui, sans-serif;
+    --font-mono: ui-monospace, Consolas, monospace;
+
+    /* 字級 */
+    --fs-xs: 12px; --fs-sm: 14px; --fs-md: 16px;
+    --fs-lg: 20px; --fs-xl: 24px; --fs-2xl: 30px;
+    --fs-r: 17px;  /* 內文閱讀字級 */
+    --fs-h1: 32px; /* 文章標題 */
+
+    /* 間距 */
+    --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-12: 48px;
+
+    /* 圓角／陰影 */
+    --radius: 8px; --radius-lg: 12px;
+    --shadow-sm: 0 1px 2px rgb(31 36 48 / 0.06);
+    --shadow-md: 0 4px 12px rgb(31 36 48 / 0.10);
+
+    /* 動效 */
+    --t-fast: 150ms ease; --t-normal: 200ms ease;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-page:     #10141C;
+      --bg-surface:  #1A202B;
+      --bg-hover:    #232B38;
+      --bg-active:   #2C3545;
+      --border:      #2E3644;
+      --text-1:      #E4E8EF;  /* AA 13.1:1 */
+      --text-2:      #9AA4B2;  /* AA 6.8:1 */
+      --accent:      #F6AD55;  /* AA 9.0:1 */
+      --accent-soft: #C05621;  /* 標籤底仍可用，配白字 */
+      --mark-bg:     #8A6D1F;  /* 深黃底＋亮字 */
+      --mark-fg:     #FFFFFF;  /* mark 高亮上的文字（AA 4.9:1） */
+      --focus:       #F6AD55;
+      --danger:      #FCA5A5;  /* 刪除／取消（AA 7.8:1） */
+      --shadow-sm:   0 1px 2px rgb(0 0 0 / 0.4);
+      --shadow-md:   0 4px 12px rgb(0 0 0 / 0.5);
+    }
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg-page);
+    color: var(--text-1);
+    font-family: var(--font-body);
+    font-size: var(--fs-md);
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body > main { flex: 1 0 auto; }
+
+  ::selection { background: var(--mark-bg); color: var(--text-1); }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+
+  /* 5.1 頁首 */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    height: 56px;
+    padding: 0 var(--sp-4);
+    background: var(--bg-surface);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    color: var(--text-1);
+    text-decoration: none;
+  }
+  .brand-name {
+    font-size: var(--fs-lg);
+    font-weight: 700;
+    letter-spacing: .01em;
+    transition: color var(--t-fast);
+  }
+  .brand:hover .brand-name { color: var(--accent); }
+
+  /* 5.2 搜尋框 */
+  .search {
+    position: relative;
+    flex: 0 0 320px;
+    width: 320px;
+    margin-left: auto;
+  }
+
+  .search input {
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  }
+
+  .search input::placeholder { color: var(--text-2); }
+  .search input.has-value { padding-right: 76px; }
+  .search input:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--bg-hover);
+  }
+  .search input::-webkit-search-cancel-button,
+  .search input::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+
+  .search-count {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .search-clear {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: var(--fs-lg);
+    line-height: 1;
+    cursor: pointer;
+  }
+  .search-clear:hover { color: var(--text-1); }
+
+  /* 5.6 重新整理鈕 */
+  .refresh {
+    flex: 0 0 auto;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 var(--sp-2);
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    transition: color var(--t-fast);
+  }
+  .refresh:hover { color: var(--accent); }
+  .refresh:disabled { color: var(--text-2); cursor: default; opacity: .6; }
+
+  /* 檢視切換 */
+  .tabs {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--bg-hover);
+  }
+  .tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    height: 30px;
+    padding: 0 var(--sp-3);
+    border-radius: 999px;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background var(--t-fast), color var(--t-fast);
+  }
+  .tab:hover { color: var(--text-1); }
+  .tab.is-active {
+    background: var(--bg-surface);
+    color: var(--text-1);
+    font-weight: 600;
+    box-shadow: var(--shadow-sm);
+  }
+  .tab-count {
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+  }
+
+  /* 登入狀態 */
+  .auth-area { display: flex; align-items: center; gap: var(--sp-2); flex: 0 0 auto; }
+  .auth-btn {
+    height: 36px;
+    padding: 0 var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color var(--t-fast), color var(--t-fast);
+  }
+  .auth-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .auth-email {
+    max-width: 180px;
+    overflow: hidden;
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .notify-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
+  }
+  .notify-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .notify-btn:disabled { cursor: default; opacity: .55; }
+  .notify-btn.is-on {
+    border-color: var(--accent);
+    background: var(--bg-active);
+    color: var(--accent);
+  }
+  .notify-dot {
+    flex: 0 0 auto;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+    background: transparent;
+  }
+  .notify-btn.is-on .notify-dot { background: currentColor; }
+  .notify-btn.is-unready .notify-dot { border-color: var(--danger); }
+  .notify-btn.is-unready.is-on .notify-dot { background: var(--danger); }
+
+  /* 按鈕 */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0 var(--sp-3);
+    border: 1px solid transparent;
+    border-radius: var(--radius);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+  }
+  .btn:disabled { cursor: default; opacity: .6; }
+  .btn-primary { background: var(--accent-soft); color: #FFFFFF; }
+  .btn-primary:hover:not(:disabled) { filter: brightness(.94); }
+  .btn-ghost { background: transparent; border-color: var(--border); color: var(--text-1); }
+  .btn-ghost:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn-danger { color: var(--danger); }
+  .btn-danger:hover:not(:disabled) { border-color: var(--danger); color: var(--danger); }
+
+  /* 3. 版面 */
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--sp-6);
+    max-width: 1680px;
+    margin: 0 auto;
+    padding: var(--sp-6);
+    align-items: start;
+  }
+
+  .list-pane {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 72ch;
+    margin: 0 auto;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .detail-pane { display: none; }
+  body.is-detailing .list-pane { display: none; }
+  body.is-detailing .list-side { display: none; }
+  body.is-detailing .detail-pane { display: block; }
+
+  .list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-3);
+  }
+
+  /* 列表側欄：最新一期與主題分佈 */
+  .list-side {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-6);
+    min-width: 0;
+  }
+  .side-block { min-width: 0; }
+  .side-title {
+    margin: 0 0 var(--sp-3);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: .06em;
+    color: var(--text-2);
+  }
+  .side-latest {
+    display: block;
+    padding: var(--sp-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-surface);
+    color: inherit;
+    text-decoration: none;
+    transition: border-color var(--t-fast), background var(--t-fast);
+  }
+  .side-latest:hover { border-color: var(--accent); background: var(--bg-hover); }
+  .side-eyebrow {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .side-latest-title {
+    display: -webkit-box;
+    margin-top: var(--sp-2);
+    overflow: hidden;
+    font-size: var(--fs-md);
+    font-weight: 700;
+    line-height: 1.5;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .side-latest-excerpt {
+    display: -webkit-box;
+    margin-top: var(--sp-1);
+    overflow: hidden;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-2);
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+  }
+  .side-themes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .side-theme {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    max-width: 100%;
+    padding: 2px var(--sp-2);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .side-theme-count {
+    color: var(--text-1);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+  .side-note {
+    margin: var(--sp-3) 0 0;
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+  }
+
+  .month-marker {
+    margin: var(--sp-4) 0 0;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    color: var(--text-2);
+  }
+  .list > .month-marker:first-child { margin-top: 0; }
+
+  /* 5.3 文章卡片 */
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    width: 100%;
+    padding: var(--sp-4);
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: inherit;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background var(--t-fast);
+  }
+  .card:hover { background: var(--bg-hover); }
+  .card:active { filter: brightness(.98); }
+  .card.is-active { background: var(--bg-active); }
+  .card.is-active .card-title { color: var(--accent); }
+
+  .card-wrap { position: relative; display: flex; }
+  .card-wrap .card { padding-right: 56px; }
+
+  /* 收藏愛心：自繪 SVG 當遮罩，顏色跟著文字色走，不需要圖示字型 */
+  .card-fav, .stat-ico {
+    --heart-line: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 1 24 24'%3E%3Cpath d='M12 21 4.93 13.93A5 5 0 0 1 12 6.86a5 5 0 0 1 7.07 7.07Z' fill='none' stroke='%23000' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --heart-fill: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 1 24 24'%3E%3Cpath d='M12 21 4.93 13.93A5 5 0 0 1 12 6.86a5 5 0 0 1 7.07 7.07Z' fill='%23000' stroke='%23000' stroke-width='2' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+  .card-fav::before, .stat-ico::before {
+    content: '';
+    display: block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    -webkit-mask: var(--heart-line) center / contain no-repeat;
+    mask: var(--heart-line) center / contain no-repeat;
+  }
+  .card-fav.is-on::before {
+    -webkit-mask-image: var(--heart-fill);
+    mask-image: var(--heart-fill);
+  }
+  .card-fav {
+    position: absolute;
+    top: 10px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-2);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: color var(--t-fast), background var(--t-fast);
+  }
+  .card-fav:hover { background: var(--bg-active); color: var(--accent); }
+  .card-fav.is-on { color: var(--accent); }
+  .card-fav.is-popping { animation: fav-pop 240ms cubic-bezier(.22,1,.36,1); }
+
+  .card-tags { display: flex; align-items: center; gap: var(--sp-2); }
+
+  .tag {
+    display: inline-block;
+    height: 24px;
+    padding: 0 var(--sp-2);
+    border-radius: 999px;
+    font-size: var(--fs-xs);
+    line-height: 24px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .tag-date { background: var(--bg-hover); color: var(--text-2); font-family: var(--font-mono); }
+  .tag-theme { max-width: 190px; background: var(--accent-soft); color: #FFFFFF; }
+
+  .card-title {
+    font-size: var(--fs-md);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text-1);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .card-excerpt {
+    min-height: calc(var(--fs-sm) * 1.6 * 2);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-2);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .card-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-1);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-favs { display: inline-flex; align-items: center; gap: var(--sp-1); }
+  .stat-ico {
+    font-size: 12px;
+    font-style: normal;
+    line-height: 1;
+  }
+
+  /* 5.4 閱讀視圖 */
+  .article {
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: var(--sp-6) var(--sp-8) var(--sp-8);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .reader {
+    display: grid;
+    grid-template-columns: minmax(230px, 300px) minmax(0, 1fr) minmax(250px, 320px);
+    grid-template-areas: "glossary main summary";
+    align-items: start;
+  }
+  .reader-main { grid-area: main; min-width: 0; padding: 0 var(--sp-8); }
+  .reader-glossary {
+    grid-area: glossary;
+    align-self: stretch;
+    min-width: 0;
+    padding-right: var(--sp-6);
+    border-right: 1px solid var(--border);
+  }
+  .reader-summary {
+    grid-area: summary;
+    align-self: stretch;
+    min-width: 0;
+    padding-left: var(--sp-6);
+    border-left: 1px solid var(--border);
+  }
+  .reader.no-glossary {
+    grid-template-columns: minmax(0, 1fr) minmax(250px, 320px);
+    grid-template-areas: "main summary";
+  }
+  .reader.no-summary {
+    grid-template-columns: minmax(230px, 300px) minmax(0, 1fr);
+    grid-template-areas: "glossary main";
+  }
+  .reader.no-glossary.no-summary {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "main";
+  }
+  .reader.no-glossary .reader-main { padding-left: 0; }
+  .reader.no-summary .reader-main { padding-right: 0; }
+
+  .rail-sticky {
+    position: sticky;
+    top: 76px;
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+    padding-right: var(--sp-1);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+  .rail-sticky::-webkit-scrollbar { width: 6px; }
+  .rail-sticky::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+  }
+  .rail-sticky::-webkit-scrollbar-track { background: transparent; }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    min-width: 44px;
+    height: 28px;
+    margin-bottom: var(--sp-4);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .back:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+  .article h1 {
+    margin: 0 0 var(--sp-3);
+    font-size: var(--fs-h1);
+    font-weight: 700;
+    line-height: 1.35;
+    letter-spacing: .01em;
+    color: var(--text-1);
+    text-wrap: balance;
+  }
+
+  .dateline {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-1) var(--sp-4);
+    margin: 0 0 var(--sp-6);
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .dateline-stats { display: inline-flex; align-items: center; gap: var(--sp-3); }
+
+  .prose {
+    font-size: var(--fs-r);
+    line-height: 1.9;
+    letter-spacing: .015em;
+    color: var(--text-1);
+  }
+  .prose > :first-child { margin-top: 0; }
+  .prose p { margin: 0 0 var(--sp-5); text-wrap: pretty; }
+  .prose h2 {
+    margin: var(--sp-12) 0 var(--sp-4);
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    line-height: 1.4;
+    letter-spacing: .01em;
+    color: var(--text-1);
+    text-wrap: balance;
+  }
+  .prose h3 {
+    margin: var(--sp-8) 0 var(--sp-3);
+    font-size: var(--fs-lg);
+    font-weight: 600;
+    line-height: 1.5;
+    letter-spacing: .01em;
+    color: var(--text-1);
+    text-wrap: balance;
+  }
+  .prose h4 {
+    margin: var(--sp-4) 0 var(--sp-2);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    color: var(--text-1);
+  }
+  .prose ul, .prose ol { margin: 0 0 var(--sp-4); padding-left: var(--sp-6); }
+  .prose li + li { margin-top: var(--sp-2); }
+  .prose strong { font-weight: 700; }
+  .prose code {
+    padding: 0 var(--sp-1);
+    border-radius: 4px;
+    background: var(--bg-hover);
+    font-family: var(--font-mono);
+    font-size: .92em;
+  }
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    word-break: break-all;
+  }
+  .prose blockquote {
+    margin: 0 0 var(--sp-4);
+    padding: var(--sp-2) var(--sp-4);
+    border-left: 1px solid var(--border);
+    color: var(--text-2);
+  }
+  .prose blockquote p { margin: 0; }
+  .prose hr { border: 0; border-top: 1px solid var(--border); margin: var(--sp-8) 0; }
+
+  .term {
+    display: inline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: inherit;
+    text-decoration: underline dashed;
+    text-decoration-color: var(--accent);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .term:hover { color: var(--accent); background: var(--bg-hover); }
+
+  .glossary { margin: 0; padding: 0; border: 0; }
+  .glossary h2,
+  .summary h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: 0 0 var(--sp-3);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--text-1);
+  }
+  .rail-count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--bg-hover);
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+    font-weight: 600;
+  }
+  .rail-note {
+    margin: calc(var(--sp-1) * -1) 0 var(--sp-4);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .glossary dl { margin: 0; }
+  .gloss-empty {
+    margin: var(--sp-2) 0 0;
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+  .gloss-item {
+    padding: var(--sp-2) var(--sp-2);
+    border-radius: var(--radius);
+    scroll-margin-top: 80px;
+    transition: background var(--t-fast);
+  }
+  .gloss-item + .gloss-item { border-top: 1px solid var(--border); }
+  .gloss-item.is-flash { background: var(--bg-active); }
+  .gloss-item dt {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--text-1);
+  }
+  .gloss-item dd {
+    margin: var(--sp-1) 0 0;
+    font-size: var(--fs-sm);
+    line-height: 1.65;
+    color: var(--text-2);
+  }
+
+  .summary-group + .summary-group { margin-top: var(--sp-6); }
+  .summary-group h3 {
+    margin: 0 0 var(--sp-2);
+    font-size: var(--fs-xs);
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--text-2);
+  }
+  .summary-data {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .summary-data li {
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius);
+    background: var(--bg-hover);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-1);
+  }
+  .summary-data .num {
+    color: var(--accent);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .summary-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: kp;
+  }
+  .summary-list li {
+    position: relative;
+    padding: var(--sp-2) 0 var(--sp-2) 26px;
+    border-top: 1px solid var(--border);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-1);
+    counter-increment: kp;
+  }
+  .summary-list li:first-child { padding-top: 0; border-top: 0; }
+  .summary-list li::before {
+    content: counter(kp);
+    position: absolute;
+    top: var(--sp-2);
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: #FFFFFF;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+  }
+  .summary-list li:first-child::before { top: 0; }
+
+  /* 文章重點 TOC */
+  .toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: toc;
+  }
+  .toc-item { counter-increment: toc; }
+  .toc-link {
+    position: relative;
+    display: block;
+    width: 100%;
+    padding: var(--sp-2) var(--sp-2) var(--sp-2) 26px;
+    border: 0;
+    border-top: 1px solid var(--border);
+    border-radius: 0;
+    background: transparent;
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    text-align: left;
+    cursor: pointer;
+    transition: color var(--t-fast), background var(--t-fast);
+  }
+  .toc-item:first-child .toc-link { padding-top: 0; border-top: 0; }
+  .toc-link::before {
+    content: counter(toc);
+    position: absolute;
+    top: var(--sp-2);
+    left: 0;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg-hover);
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    transition: background var(--t-fast), color var(--t-fast);
+  }
+  .toc-item:first-child .toc-link::before { top: 0; }
+  .toc-link:hover { color: var(--accent); background: var(--bg-hover); }
+  .toc-link:hover::before { color: var(--text-1); }
+  .toc-link[aria-current="location"] { color: var(--accent); font-weight: 700; }
+  .toc-link[aria-current="location"]::before {
+    background: var(--accent-soft);
+    color: #FFFFFF;
+  }
+  .toc-target { scroll-margin-top: 80px; }
+
+  .source {
+    margin: var(--sp-8) 0 0;
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--bg-page);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: var(--fs-sm);
+    line-height: 1.8;
+  }
+  .source p { margin: 0 0 var(--sp-3); }
+  .source ol { margin: 0; padding-left: var(--sp-6); }
+  .source ol li + li { margin-top: var(--sp-3); }
+  .source-title-link {
+    color: var(--text-1);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--border);
+    text-underline-offset: 3px;
+  }
+  .source-title-link:hover {
+    color: var(--accent);
+    text-decoration-color: currentColor;
+  }
+
+  /* 上下篇導覽 */
+  .pn-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--sp-3);
+    margin: var(--sp-8) 0 0;
+    padding-top: var(--sp-5);
+    border-top: 1px solid var(--border);
+  }
+  .pn-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    min-width: 0;
+    padding: var(--sp-3) var(--sp-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-1);
+    font-family: inherit;
+    text-align: left;
+    text-decoration: none;
+    transition: border-color var(--t-fast), background var(--t-fast);
+  }
+  .pn-link:hover { border-color: var(--accent); background: var(--bg-hover); }
+  .pn-link[aria-hidden="true"] { visibility: hidden; }
+  .pn-link.is-next { text-align: right; }
+  .pn-label {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+  }
+  .pn-title {
+    font-size: var(--fs-sm);
+    font-weight: 600;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  /* 載入骨架 */
+  .skel-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: 108px;
+    padding: var(--sp-4);
+  }
+  .skel-line {
+    height: 14px;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--bg-hover) 25%, var(--bg-active) 45%, var(--bg-hover) 65%);
+    background-size: 200% 100%;
+    animation: skel 1.2s ease-in-out infinite;
+  }
+  .skel-line.w40 { width: 40%; height: 22px; }
+  .skel-line.w70 { width: 70%; }
+  .skel-line.w90 { width: 90%; }
+  @keyframes skel { from { background-position: 200% 0; } to { background-position: -200% 0; } }
+
+  /* 進場微互動 */
+  .detail-pane .article.is-entering { animation: detail-in 220ms cubic-bezier(.22,1,.36,1) both; }
+  @keyframes detail-in {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes fav-pop {
+    40% { transform: scale(1.25); }
+    100% { transform: scale(1); }
+  }
+  .toast { animation: toast-in 200ms cubic-bezier(.22,1,.36,1) both; }
+  @keyframes toast-in {
+    from { opacity: 0; transform: translate(-50%, 8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
+  }
+
+  mark { background: var(--mark-bg); color: var(--mark-fg); padding: 0 1px; border-radius: 2px; }
+
+  /* 5.5 空狀態 */
+  .state {
+    padding: var(--sp-12) var(--sp-4);
+    text-align: center;
+  }
+  .state-main {
+    margin: 0;
+    font-size: var(--fs-lg);
+    color: var(--text-1);
+  }
+  .state-sub {
+    margin: var(--sp-2) 0 0;
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+  }
+  .loading {
+    margin: 0;
+    padding: var(--sp-12) 0;
+    text-align: center;
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+  }
+
+  /* 我的收藏 */
+  .fav-pane {
+    display: none;
+    width: 100%;
+    max-width: 86ch;
+    margin: 0 auto;
+    padding: var(--sp-6) var(--sp-8) var(--sp-8);
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+  }
+  body.is-favorites .list-pane,
+  body.is-favorites .list-side,
+  body.is-favorites .detail-pane { display: none; }
+  body.is-favorites .fav-pane { display: block; }
+
+  .fav-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    flex-wrap: wrap;
+  }
+  .fav-heading {
+    margin: 0;
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    line-height: 1.4;
+  }
+  .fav-sub {
+    margin: var(--sp-1) 0 var(--sp-6);
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+  }
+
+  .notify-setting {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    margin: 0 0 var(--sp-6);
+    padding: var(--sp-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-page);
+  }
+  .notify-title {
+    margin: 0;
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.5;
+  }
+  .notify-hint {
+    margin: 2px 0 0;
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .notify-switch {
+    position: relative;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+  .notify-switch input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .notify-track {
+    display: block;
+    width: 44px;
+    height: 26px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-active);
+    transition: background var(--t-fast), border-color var(--t-fast);
+  }
+  .notify-thumb {
+    display: block;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--text-2);
+    transition: transform var(--t-fast), background var(--t-fast);
+  }
+  .notify-switch input:checked + .notify-track {
+    border-color: var(--accent-soft);
+    background: var(--accent-soft);
+  }
+  .notify-switch input:checked + .notify-track .notify-thumb {
+    background: #FFFFFF;
+    transform: translateX(18px);
+  }
+  .notify-switch input:focus-visible + .notify-track {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+  }
+  .notify-switch input:disabled + .notify-track {
+    cursor: default;
+    opacity: .55;
+  }
+
+  .fav-item {
+    padding: var(--sp-4) 0;
+    border-top: 1px solid var(--border);
+  }
+  .fav-item:first-child { border-top: 0; padding-top: 0; }
+  .fav-item-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+  .fav-item-title {
+    color: var(--text-1);
+    font-size: var(--fs-md);
+    font-weight: 700;
+    line-height: 1.5;
+    text-decoration: none;
+  }
+  .fav-item-title:hover {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .fav-item-date {
+    flex: 0 0 auto;
+    color: var(--text-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-xs);
+  }
+  .fav-item-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-top: var(--sp-1);
+    font-size: var(--fs-xs);
+    color: var(--text-2);
+  }
+  .fav-item-note {
+    margin: var(--sp-2) 0 0;
+    font-size: var(--fs-sm);
+    line-height: 1.7;
+    color: var(--text-1);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .fav-item-note.is-empty { color: var(--text-2); }
+  .fav-item-missing { color: var(--danger); font-weight: 600; }
+  .fav-item-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+  }
+  .fav-editor { margin-top: var(--sp-2); }
+  .fav-editor-actions {
+    display: flex;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+  }
+  .fav-input {
+    display: block;
+    width: 100%;
+    min-height: 76px;
+    padding: var(--sp-2) var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-page);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    resize: vertical;
+  }
+  .fav-input:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  .fav-empty-note { color: var(--text-2); }
+
+  /* 文章內收藏盒 */
+  .fav-box {
+    margin: var(--sp-8) 0 var(--sp-12);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--bg-hover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .fav-box-head {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-2);
+  }
+  .fav-box-title {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    color: var(--text-1);
+  }
+  .fav-badge {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: #FFFFFF;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .fav-box-note {
+    margin: 0 0 var(--sp-2);
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+  }
+  .fav-box .fav-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+  }
+
+  /* 登入／註冊 */
+  .auth-dialog {
+    width: min(420px, calc(100vw - 32px));
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: var(--bg-surface);
+    color: var(--text-1);
+    box-shadow: var(--shadow-md);
+  }
+  .auth-dialog::backdrop { background: rgb(15 20 28 / 0.55); }
+  .auth-inner { padding: var(--sp-6); }
+  .auth-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--sp-3);
+  }
+  .auth-top h2 {
+    margin: 0;
+    font-size: var(--fs-lg);
+    line-height: 1.4;
+  }
+  .auth-close {
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: var(--fs-lg);
+    line-height: 1;
+    cursor: pointer;
+  }
+  .auth-close:hover { background: var(--bg-hover); color: var(--text-1); }
+  .auth-tabs {
+    display: flex;
+    gap: var(--sp-1);
+    margin: var(--sp-4) 0;
+    padding: 3px;
+    border-radius: var(--radius);
+    background: var(--bg-hover);
+  }
+  .auth-tab {
+    flex: 1;
+    height: 32px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-2);
+    font-family: inherit;
+    font-size: var(--fs-sm);
+    cursor: pointer;
+  }
+  .auth-tab[aria-selected="true"] {
+    background: var(--bg-surface);
+    color: var(--text-1);
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+  }
+  .auth-field { display: block; margin-bottom: var(--sp-3); }
+  .auth-field span {
+    display: block;
+    margin-bottom: var(--sp-1);
+    font-size: var(--fs-sm);
+    color: var(--text-2);
+  }
+  .auth-field input {
+    width: 100%;
+    height: 40px;
+    padding: 0 var(--sp-3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-page);
+    color: var(--text-1);
+    font-family: inherit;
+    font-size: var(--fs-md);
+  }
+  .auth-field input:focus {
+    outline: 2px solid var(--focus);
+    outline-offset: 1px;
+    border-color: var(--accent);
+  }
+  .auth-hint {
+    margin: 0 0 var(--sp-3);
+    font-size: var(--fs-xs);
+    line-height: 1.6;
+    color: var(--text-2);
+  }
+  .auth-error {
+    margin: 0 0 var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    border-radius: var(--radius);
+    background: var(--bg-hover);
+    color: var(--danger);
+    font-size: var(--fs-sm);
+    font-weight: 600;
+  }
+  .auth-submit { width: 100%; min-height: 42px; }
+
+  .toast {
+    position: fixed;
+    bottom: var(--sp-6);
+    left: 50%;
+    z-index: 60;
+    max-width: calc(100vw - 32px);
+    padding: var(--sp-2) var(--sp-4);
+    border-radius: 999px;
+    background: var(--text-1);
+    color: var(--bg-page);
+    font-size: var(--fs-sm);
+    box-shadow: var(--shadow-md);
+    transform: translateX(-50%);
+  }
+
+  /* 5.7 頁尾 */
+  .site-footer {
+    max-width: 1680px;
+    margin: var(--sp-12) auto 0;
+    padding: var(--sp-6) var(--sp-6) var(--sp-8);
+    border-top: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: var(--fs-sm);
+    line-height: 1.8;
+    text-align: center;
+  }
+  .site-footer p { margin: 0; }
+  .foot-count { font-variant-numeric: tabular-nums; }
+
+  @media (min-width: 901px) {
+    body:not(.is-detailing):not(.is-favorites) .layout {
+      grid-template-columns: minmax(0, 72ch) minmax(220px, 280px);
+      justify-content: center;
+    }
+    .list-side {
+      position: sticky;
+      top: 76px;
+      align-self: start;
+    }
+  }
+
+  @media (min-width: 1400px) {
+    .layout { padding-left: var(--sp-12); padding-right: var(--sp-12); }
+  }
+
+  /* 8. 響應式 */
+  @media (max-width: 1100px) {
+    .reader {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-areas:
+        "main main"
+        "glossary summary";
+    }
+    .reader-main {
+      max-width: 72ch;
+      margin: 0 auto;
+      padding: 0;
+    }
+    .reader-glossary,
+    .reader-summary {
+      margin-top: var(--sp-8);
+      padding: var(--sp-6) var(--sp-6) 0 0;
+      border: 0;
+      border-top: 1px solid var(--border);
+    }
+    .reader-summary { padding: var(--sp-6) 0 0 var(--sp-6); }
+    .reader-glossary .rail-sticky,
+    .reader-summary .rail-sticky {
+      position: static;
+      max-height: none;
+      overflow: visible;
+      padding-right: 0;
+    }
+    .reader.no-glossary {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "main" "summary";
+    }
+    .reader.no-glossary .reader-summary {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .reader.no-summary {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "main" "glossary";
+    }
+    .reader.no-summary .reader-glossary { padding-right: 0; }
+    .reader.no-glossary.no-summary { grid-template-areas: "main"; }
+  }
+
+  @media (max-width: 900px) {
+    .site-header {
+      height: auto;
+      min-height: 56px;
+      flex-wrap: wrap;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-4);
+    }
+    .brand { order: 1; }
+    .auth-area { order: 2; margin-left: auto; }
+    .refresh { order: 3; }
+    .search { order: 4; flex: 1 1 100%; width: 100%; margin-left: 0; }
+    .tabs { order: 5; flex: 1 1 100%; justify-content: center; }
+    .auth-email { max-width: 120px; }
+
+    .layout {
+      gap: var(--sp-4);
+      padding: var(--sp-4);
+    }
+
+    .article { padding: var(--sp-4); border-radius: var(--radius); }
+    .fav-pane { padding: var(--sp-4); border-radius: var(--radius); }
+    .reader { display: block; }
+    .reader-main { max-width: 100%; }
+    .reader-glossary,
+    .reader-summary {
+      margin-top: var(--sp-6);
+      padding: var(--sp-4) 0 0;
+      border-left: 0;
+      border-right: 0;
+    }
+    .article h1 { font-size: var(--fs-xl); }
+    .prose h2 { margin-top: var(--sp-6); font-size: var(--fs-lg); }
+    .tag-theme { max-width: 60%; }
+    .notify-btn { padding: 0 var(--sp-2); }
+  }
+
+  @media (max-width: 600px) {
+    .pn-nav { grid-template-columns: minmax(0, 1fr); }
+    .pn-link.is-next { text-align: left; }
+    .auth-email { display: none; }
+    .notify-text { display: none; }
+    .notify-btn {
+      width: 36px;
+      padding: 0;
+      justify-content: center;
+    }
+    .notify-setting { align-items: flex-start; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      transition: none !important;
+      animation: none !important;
+      scroll-behavior: auto !important;
+    }
+  }
+</style>
+</head>
+<body>
+<header class="site-header">
+  <a class="brand" href="#/" aria-label="經典案例日刊">
+    <span class="brand-name">經典案例日刊</span>
+  </a>
+  <nav class="tabs" aria-label="切換檢視">
+    <a class="tab is-active" id="tabAll" href="#/" data-tab="all">全部案例</a>
+    <a class="tab" id="tabFav" href="#/favorites" data-tab="favorites">我的收藏<span class="tab-count" id="favCount" hidden></span></a>
+  </nav>
+  <div class="search" role="search">
+    <input id="q" type="search" placeholder="搜尋標題／主題／內文" aria-label="搜尋標題、主題或內文" autocomplete="off" spellcheck="false">
+    <span class="search-count" id="count" hidden></span>
+    <button type="button" class="search-clear" id="clear" aria-label="清除搜尋" hidden>×</button>
+  </div>
+  <div class="auth-area" id="authArea"></div>
+  <button type="button" class="refresh" id="refresh">重新整理</button>
+</header>
+
+<main class="layout">
+  <nav class="list-pane" aria-label="案例列表">
+    <div class="list" id="list" aria-busy="true">
+      <div class="skel-card" aria-hidden="true"><span class="skel-line w40"></span><span class="skel-line w90"></span><span class="skel-line w70"></span></div>
+      <div class="skel-card" aria-hidden="true"><span class="skel-line w40"></span><span class="skel-line w90"></span><span class="skel-line w70"></span></div>
+      <div class="skel-card" aria-hidden="true"><span class="skel-line w40"></span><span class="skel-line w90"></span><span class="skel-line w70"></span></div>
+    </div>
+    <div id="listState" hidden></div>
+  </nav>
+  <aside class="list-side" id="listSide" aria-label="日刊動態" hidden></aside>
+  <section class="detail-pane" aria-label="案例全文">
+    <article class="article" id="detail"></article>
+  </section>
+  <section class="fav-pane" id="favPane" aria-labelledby="favTitle">
+    <div class="fav-head">
+      <h1 class="fav-heading" id="favTitle">我的收藏</h1>
+      <button type="button" class="btn btn-ghost" id="exportMd" hidden>匯出 Markdown</button>
+    </div>
+    <p class="fav-sub" id="favSub">把想再看的案例存起來，順手寫下自己的註記。</p>
+    <section class="notify-setting" id="notifySetting" aria-label="Email 通知設定" hidden>
+      <div class="notify-copy">
+        <p class="notify-title">每日案例完成寄信給我</p>
+        <p class="notify-hint" id="notifyHint"></p>
+      </div>
+      <label class="notify-switch" title="每日案例完成寄信給我">
+        <input type="checkbox" id="notifyToggle" aria-label="每日案例完成寄信給我">
+        <span class="notify-track" aria-hidden="true"><span class="notify-thumb"></span></span>
+      </label>
+    </section>
+    <div id="favList"></div>
+    <div id="favState" hidden></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <p>經典案例日刊 · 每個工作日出刊 · 累積 <span class="foot-count" id="footCount">—</span> 期</p>
+</footer>
+
+<dialog class="auth-dialog" id="authDlg" aria-labelledby="authTitle">
+  <div class="auth-inner">
+    <div class="auth-top">
+      <h2 id="authTitle">登入</h2>
+      <button type="button" class="auth-close" id="authClose" aria-label="關閉">×</button>
+    </div>
+    <div class="auth-tabs" role="tablist" aria-label="登入或註冊">
+      <button type="button" class="auth-tab" id="authTabLogin" role="tab" aria-selected="true">登入</button>
+      <button type="button" class="auth-tab" id="authTabRegister" role="tab" aria-selected="false">註冊</button>
+    </div>
+    <form id="authForm" novalidate>
+      <label class="auth-field"><span>Email</span><input id="authEmail" type="email" autocomplete="email" maxlength="254" required></label>
+      <label class="auth-field"><span>密碼</span><input id="authPass" type="password" autocomplete="current-password" maxlength="256" required></label>
+      <p class="auth-hint" id="authHint">密碼至少 8 碼。收藏、註記與 email 通知只存在這個站台。</p>
+      <p class="auth-error" id="authError" role="alert" hidden></p>
+      <button type="submit" class="btn btn-primary auth-submit" id="authSubmit">登入</button>
+    </form>
+  </div>
+</dialog>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<noscript><p class="state"><span class="state-main">此儀表板需要 JavaScript 才能顯示案例。</span></p></noscript>
+
+<script>
+(function () {
+  'use strict';
+
+  var state = {
+    cases: [],
+    text: {},
+    pending: {},
+    err: {},
+    current: null,
+    query: '',
+    indexing: false,
+    shown: null,
+    listScroll: 0,
+    lastFile: null,
+    restoreFocus: false,
+    loaded: false,
+    boot: false,
+    me: null,
+    authChecked: false,
+    favs: {},
+    favList: [],
+    favLoaded: false,
+    editingFav: null,
+    pendingFav: null,
+    focusNote: null,
+    viewed: {},
+    backHash: null,
+    authMode: 'login',
+    notify: { enabled: 0, smtp_ready: false, loaded: false, busy: false }
+  };
+
+  var listEl = document.getElementById('list');
+  var listStateEl = document.getElementById('listState');
+  var listSideEl = document.getElementById('listSide');
+  var footCountEl = document.getElementById('footCount');
+  var detailEl = document.getElementById('detail');
+  var qEl = document.getElementById('q');
+  var countEl = document.getElementById('count');
+  var clearEl = document.getElementById('clear');
+  var refreshBtn = document.getElementById('refresh');
+  var favListEl = document.getElementById('favList');
+  var favStateEl = document.getElementById('favState');
+  var favCountEl = document.getElementById('favCount');
+  var favSubEl = document.getElementById('favSub');
+  var exportBtn = document.getElementById('exportMd');
+  var tabAllEl = document.getElementById('tabAll');
+  var tabFavEl = document.getElementById('tabFav');
+  var authAreaEl = document.getElementById('authArea');
+  var authDlg = document.getElementById('authDlg');
+  var authForm = document.getElementById('authForm');
+  var authEmail = document.getElementById('authEmail');
+  var authPass = document.getElementById('authPass');
+  var authHint = document.getElementById('authHint');
+  var authError = document.getElementById('authError');
+  var authSubmit = document.getElementById('authSubmit');
+  var authTitle = document.getElementById('authTitle');
+  var authTabLogin = document.getElementById('authTabLogin');
+  var authTabRegister = document.getElementById('authTabRegister');
+  var toastEl = document.getElementById('toast');
+  var notifySettingEl = document.getElementById('notifySetting');
+  var notifyToggleEl = document.getElementById('notifyToggle');
+  var notifyHintEl = document.getElementById('notifyHint');
+
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  function terms() {
+    return state.query ? state.query.split(/\s+/) : [];
+  }
+
+  function reEscape(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // tier 2 = 專業術語，才會進名詞解釋面板；tier 1 = 一般用語，永遠不標示。
+  var GLOSSARY = [
+    { term: '付費會員制', tier: 1, def: '顧客先付會費，才能購買或享有會員優惠的模式；營收同時來自會費與商品銷售。' },
+    { term: '口碑推薦', tier: 1, def: '由現有顧客主動向親友推薦、帶進新客的口碑行銷；「老帶新」是常見說法。' },
+    { term: '推薦計畫', tier: 1, def: '用獎勵鼓勵現有顧客邀請新客的機制，獎勵常見為現金、折扣或產品額度。' },
+    { term: '雙邊獎勵', tier: 1, def: '推薦人與被推薦人雙方都獲得獎勵的設計，讓邀請更像送禮，而不是替品牌宣傳。' },
+    { term: '家庭卡', tier: 1, def: '附在主要會員資格下的家庭成員卡，讓同住家人共用會員權益。' },
+    { term: '促銷標記', tier: 1, def: '在會員或訂單資料上註記「來自促銷活動」，方便把這批人獨立追蹤。' },
+    { term: '紙上會員', tier: 1, def: '只為促銷優惠而註冊、缺少真實互動與續留意願的會員。' },
+    { term: '雲端', tier: 1, def: '透過網路使用遠端伺服器提供的儲存或運算服務，使用者不必自行維護硬體。' },
+    { term: '觸點', tier: 1, def: '顧客與品牌接觸的任一環節，例如網站、門市、訊息或客服（touchpoint）。' },
+    { term: '通路', tier: 1, def: '產品送到顧客手上的銷售管道，例如門市、經銷商或電商（channel）。' },
+    { term: '分群', tier: 1, def: '依共同特徵把顧客分組，分別觀察與溝通（segmentation）。' },
+    { term: '黏著', tier: 1, def: '顧客持續回來使用或購買的程度（stickiness）。' },
+    { term: '續約率', tier: 2, def: '到期會員中繼續付費的比例；用來衡量留存，不等於新客成長率。' },
+    { term: '留存率', tier: 2, def: '初始使用者在一段時間後仍持續回來使用或付費的比例。' },
+    { term: '轉換率', tier: 2, def: '完成指定目標行為（例如下單、註冊）的人數比例。' },
+    { term: '毛利率', tier: 2, def: '營收扣除直接成本後占營收的比例，用來衡量產品本身的獲利能力。' },
+    { term: '客單價', tier: 2, def: '每筆訂單的平均消費金額（average order value）。' },
+    { term: '獲客成本', tier: 2, def: '取得一位新客平均花費的行銷與銷售成本（CAC）。' },
+    { term: '北極星', tier: 2, def: '北極星指標：最能代表產品帶給顧客核心價值、可預測長期成長的單一關鍵指標。' },
+    { term: '財報電話會', tier: 2, def: '公司公布財報後，經營團隊向分析師與投資人說明結果並回答提問的會議（earnings call）。' },
+    { term: '淨銷售額', tier: 2, def: '扣除退貨、折扣與折讓後的銷售收入（net sales），比總營收更接近實收。' },
+    { term: '會計年度', tier: 2, def: '公司自訂的一年財務結算期間，不一定與日曆年相同（fiscal year）。' },
+    { term: '法遵', tier: 2, def: '遵循法律、主管機關規定與內部規範的作業要求（compliance）。' },
+    { term: 'Executive', tier: 2, def: 'Costco 的高級會員層級，年費較高，提供消費回饋等權益。' },
+    { term: '10-K', tier: 2, def: '美國上市公司向 SEC 提交的年度報告，含營運、風險與經審計財務報表。' },
+    { term: 'SEC EDGAR', tier: 2, def: '美國證券交易委員會（SEC）的公開申報文件查詢系統。' },
+    { term: 'CTR', tier: 2, def: '點擊率：看到曝光後實際點擊的比例。' },
+    { term: 'CVR', tier: 2, def: '轉換率：完成指定目標行為的比例。' },
+    { term: 'ROAS', tier: 2, def: '廣告投資報酬率：廣告帶來的營收除以廣告花費。' },
+    { term: 'ROI', tier: 2, def: '投資報酬率：回收利益相對投入成本的比例。' },
+    { term: 'CAC', tier: 2, def: '獲客成本：取得一位新客平均花費的行銷與銷售成本。' },
+    { term: 'LTV', tier: 2, def: '顧客終身價值：一位顧客在整個關係期間帶來的預期營收或利潤。' },
+    { term: 'AOV', tier: 2, def: '平均客單價：每筆訂單的平均金額。' },
+    { term: 'GMV', tier: 2, def: '商品交易總額：平台在一段期間成交的商品金額，未扣退貨與折扣。' },
+    { term: 'MAU', tier: 2, def: '月活躍用戶：一個月內有互動的不重複用戶數。' },
+    { term: 'DAU', tier: 2, def: '日活躍用戶：一天內有互動的不重複用戶數。' }
+  ];
+
+  var MAX_GLOSS = 3;
+
+  var GLOSS_BY_KEY = {};
+  GLOSSARY.forEach(function (g) { GLOSS_BY_KEY[g.term.toLowerCase()] = g; });
+  var GLOSS_TERMS = GLOSSARY.filter(function (g) { return g.tier === 2; }).sort(function (a, b) {
+    return b.term.length - a.term.length;
+  });
+  var GLOSS_RE = new RegExp('(' + GLOSS_TERMS.map(function (g) {
+    return reEscape(g.term);
+  }).join('|') + ')', 'gi');
+
+  // 名詞解釋只掃正文：heading（#1–#6）與引用（blockquote，含首行日期主題）不列入。
+  var GLOSS_SKIP = /^(A|CODE|BUTTON|MARK|SCRIPT|STYLE|H1|H2|H3|H4|H5|H6|BLOCKQUOTE)$/;
+
+  function eachTextNode(html, fn) {
+    var tpl = document.createElement('template');
+    tpl.innerHTML = html;
+    var walker = document.createTreeWalker(tpl.content, NodeFilter.SHOW_TEXT, null);
+    var nodes = [];
+    while (walker.nextNode()) { nodes.push(walker.currentNode); }
+    for (var n = 0; n < nodes.length; n++) {
+      var node = nodes[n];
+      var skip = false;
+      for (var p = node.parentNode; p && p !== tpl.content; p = p.parentNode) {
+        if (GLOSS_SKIP.test(p.nodeName)) { skip = true; break; }
+      }
+      if (!skip && node.nodeValue && fn(node)) { break; }
+    }
+    return tpl;
+  }
+
+  // 依文字出現順序回呼 tier 2 命中；回呼回傳 false 代表停止掃描。
+  function eachTermMatch(text, fn) {
+    var m;
+    GLOSS_RE.lastIndex = 0;
+    while ((m = GLOSS_RE.exec(text)) !== null) {
+      if (!m[0]) { GLOSS_RE.lastIndex += 1; continue; }
+      var entry = GLOSS_BY_KEY[m[0].toLowerCase()];
+      if (!entry) { continue; }
+      var before = text.charAt(m.index - 1);
+      var after = text.charAt(m.index + m[0].length);
+      if (/^[A-Za-z0-9]/.test(m[0]) && /[A-Za-z0-9]/.test(before)) { continue; }
+      if (/[A-Za-z0-9]$/.test(m[0]) && /[A-Za-z0-9]/.test(after)) { continue; }
+      if (fn(entry, m.index, m[0]) === false) { return; }
+    }
+  }
+
+  // 第一階段：只掃正文（不含標題與引用行），依首次出現順序取前 MAX_GLOSS 個專業術語。
+  function pickGlossTerms(htmlParts) {
+    var picked = [];
+    var seen = Object.create(null);
+    for (var i = 0; i < htmlParts.length; i++) {
+      eachTextNode(htmlParts[i] || '', function (node) {
+        eachTermMatch(node.nodeValue, function (entry) {
+          var key = entry.term.toLowerCase();
+          if (!seen[key]) {
+            seen[key] = true;
+            picked.push(entry);
+          }
+          return picked.length < MAX_GLOSS;
+        });
+        return picked.length >= MAX_GLOSS;
+      });
+      if (picked.length >= MAX_GLOSS) { break; }
+    }
+    return picked;
+  }
+
+  // 第二階段：只標示入選的術語（同篇同詞只標一次）。
+  function annotateTerms(html, ctx) {
+    var allowed = ctx.allowed;
+    var tpl = eachTextNode(html, function (node) {
+      var text = node.nodeValue;
+      var parts = [];
+      var last = 0;
+      var changed = false;
+      eachTermMatch(text, function (entry, index, matched) {
+        if (ctx.seen[entry.term] || !allowed[entry.term]) { return true; }
+        var idx = ctx.entries.length;
+        ctx.entries.push(entry);
+        ctx.seen[entry.term] = true;
+        if (index > last) { parts.push(document.createTextNode(text.slice(last, index))); }
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'term';
+        btn.setAttribute('data-gloss', 'gloss-' + idx);
+        btn.setAttribute('aria-describedby', 'gloss-def-' + idx);
+        btn.title = '查看名詞解釋';
+        btn.textContent = matched;
+        parts.push(btn);
+        last = index + matched.length;
+        changed = true;
+        return true;
+      });
+      if (!changed) { return false; }
+      if (last < text.length) { parts.push(document.createTextNode(text.slice(last))); }
+      var frag = document.createDocumentFragment();
+      for (var i = 0; i < parts.length; i++) { frag.appendChild(parts[i]); }
+      node.parentNode.replaceChild(frag, node);
+      return false;
+    });
+
+    return tpl.innerHTML;
+  }
+
+  function glossaryHtml(ctx) {
+    var count = ctx.entries.length;
+    var html = '<section class="glossary" aria-labelledby="glossaryTitle">' +
+      '<h2 id="glossaryTitle">名詞解釋' + (count ? ' <span class="rail-count">' + count + '</span>' : '') + '</h2>';
+    if (!count) {
+      html += '<p class="gloss-empty">本篇沒有需要特別解釋的術語。</p>';
+    } else {
+      html += '<dl>';
+      ctx.entries.forEach(function (g, i) {
+        html += '<div class="gloss-item" id="gloss-' + i + '" tabindex="-1">' +
+          '<dt>' + esc(g.term) + '</dt>' +
+          '<dd id="gloss-def-' + i + '">' + esc(g.def) + '</dd>' +
+          '</div>';
+      });
+      html += '</dl>';
+    }
+    return html + '</section>';
+  }
+
+  function plainText(s) {
+    return String(s == null ? '' : s)
+      .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+      .replace(/\*\*([^*]+)\*\*/g, '$1')
+      .replace(/`([^`]+)`/g, '$1')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function articleParts(html) {
+    var tpl = document.createElement('template');
+    tpl.innerHTML = html;
+
+    var source = tpl.content.querySelector('.source');
+    var sourceHtml = '';
+    if (source) {
+      var wrap = document.createElement('div');
+      var prev = source.previousElementSibling;
+      if (prev && /^H[1-6]$/.test(prev.tagName) && prev.textContent.trim() === '來源') {
+        wrap.appendChild(prev);
+      }
+      wrap.appendChild(source);
+      sourceHtml = '<div class="prose">' + wrap.innerHTML + '</div>';
+    }
+
+    var toc = [];
+    var paras = tpl.content.querySelectorAll('p');
+    for (var i = 0; i < paras.length && toc.length < 6; i++) {
+      var p = paras[i];
+      if (p.closest('blockquote')) { continue; }
+      if (p.children.length !== 1 || p.children[0].tagName !== 'STRONG') { continue; }
+      if (p.textContent.trim() !== p.children[0].textContent.trim()) { continue; }
+      var label = p.textContent.replace(/\s+/g, ' ').trim();
+      if (!label || label.length > 80) { continue; }
+      label = label.replace(/^\d+[.)、]\s*/, '');
+      var id = 'toc-' + toc.length;
+      p.id = id;
+      p.className = 'toc-target';
+      p.setAttribute('tabindex', '-1');
+      toc.push({ id: id, label: label });
+    }
+    if (!toc.length) {
+      var heads = tpl.content.querySelectorAll('h2, h3');
+      for (var j = 0; j < heads.length && toc.length < 6; j++) {
+        var head = heads[j];
+        var text = head.textContent.replace(/\s+/g, ' ').trim();
+        if (!text) { continue; }
+        var hid = 'toc-' + toc.length;
+        head.id = hid;
+        head.className = 'toc-target';
+        head.setAttribute('tabindex', '-1');
+        toc.push({ id: hid, label: text });
+      }
+    }
+
+    return { html: tpl.innerHTML, source: sourceHtml, toc: toc };
+  }
+
+  function summaryData(md) {
+    var lines = String(md || '').replace(/\r\n?/g, '\n').split('\n');
+    var data = [];
+    var inData = false;
+    var inSource = false;
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].trim();
+      if (!t) { continue; }
+      var h = t.match(/^(#{1,6})\s+(.+)$/);
+      if (h) {
+        var title = plainText(h[2]);
+        inSource = title === '來源';
+        inData = !inSource && h[1].length === 3 && /官方數據|成果|成效|數據|關鍵數字/.test(title);
+        continue;
+      }
+      if (inSource || !inData || data.length >= 4) { continue; }
+      var item = t.match(/^[-*+]\s+(.+)$/);
+      var text = item ? item[1] : t;
+      if (/^([>#]|[-*+]\s)/.test(text)) { continue; }
+      text = plainText(text);
+      if (!text) { continue; }
+      if (text.length > 110) { text = text.slice(0, 110) + '…'; }
+      data.push(text);
+    }
+    return data;
+  }
+
+  function emphasizeNumbers(s) {
+    return esc(s).replace(/(\d[\d,]*(?:\.\d+)?%?)/g, '<span class="num">$1</span>');
+  }
+
+  function summaryHtml(md, toc) {
+    var data = summaryData(md);
+    toc = toc || [];
+    if (!data.length && !toc.length) { return ''; }
+
+    var html = '<aside class="reader-summary" aria-labelledby="summaryTitle">' +
+      '<div class="rail-sticky"><section class="summary">' +
+      '<h2 id="summaryTitle">重點整理</h2>' +
+      '<p class="rail-note">數字取自原文，段落可點擊跳讀</p>';
+
+    if (toc.length) {
+      html += '<div class="summary-group"><h3>文章重點</h3><nav class="toc" aria-label="文章重點"><ol class="toc-list">';
+      toc.forEach(function (item) {
+        html += '<li class="toc-item"><button type="button" class="toc-link" data-toc="' + item.id + '">' +
+          esc(item.label) + '</button></li>';
+      });
+      html += '</ol></nav></div>';
+    }
+    if (data.length) {
+      html += '<div class="summary-group"><h3>關鍵數字</h3><ul class="summary-data">';
+      data.forEach(function (item) {
+        html += '<li>' + emphasizeNumbers(item) + '</li>';
+      });
+      html += '</ul></div>';
+    }
+    return html + '</section></div></aside>';
+  }
+
+  function mergeFlowParagraphs(html) {
+    var tpl = document.createElement('template');
+    tpl.innerHTML = html;
+    var nodes = Array.prototype.slice.call(tpl.content.children);
+
+    function pText(node) {
+      return node.textContent.replace(/\s+/g, ' ').trim();
+    }
+    function startsBlock(node) {
+      var t = pText(node);
+      if (!t) { return true; }
+      if (/^([一二三四五六七八九十]+[、.．]|\d+[.)、．]|[（(]\d+[)）])\s*/.test(t)) { return true; }
+      return node.children.length === 1 &&
+        node.children[0].tagName === 'STRONG' &&
+        pText(node.children[0]) === t;
+    }
+    function endsWithListMarker(node) {
+      return /^([一二三四五六七八九十]+[、.．]|\d+[.)、．]|[（(]\d+[)）])\s*/.test(pText(node));
+    }
+
+    nodes.forEach(function (node) {
+      if (node.tagName !== 'P' || startsBlock(node)) { return; }
+      var prev = node.previousElementSibling;
+      if (!prev || prev.tagName !== 'P' || endsWithListMarker(prev)) { return; }
+      var a = pText(prev);
+      var b = pText(node);
+      var sep = /[。！？!?；;：:）)」』.]$/.test(a) ? '' : ' ';
+      if (/[A-Za-z0-9]$/.test(a) && /^[A-Za-z0-9]/.test(b)) { sep = ' '; }
+      prev.innerHTML += sep + node.innerHTML;
+      node.remove();
+    });
+
+    return tpl.innerHTML;
+  }
+
+  function highlight(text, list) {
+    var raw = String(text == null ? '' : text);
+    if (!list.length) { return esc(raw); }
+    var re;
+    try {
+      re = new RegExp('(' + list.map(reEscape).join('|') + ')', 'gi');
+    } catch (e) {
+      return esc(raw);
+    }
+    var out = '';
+    var last = 0;
+    var m;
+    while ((m = re.exec(raw)) !== null) {
+      if (m[0] === '') { re.lastIndex += 1; continue; }
+      out += esc(raw.slice(last, m.index)) + '<mark>' + esc(m[0]) + '</mark>';
+      last = m.index + m[0].length;
+    }
+    out += esc(raw.slice(last));
+    return out;
+  }
+
+  function inline(s) {
+    var urls = [];
+    var out = esc(s).replace(/https?:\/\/[^\s<）)」』]+/g, function (u) {
+      urls.push(u);
+      return '\u0000' + (urls.length - 1) + '\u0000';
+    });
+    out = out.replace(/`([^`]+)`/g, '<code>$1</code>');
+    out = out.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+    out = out.replace(/\u0000(\d+)\u0000/g, function (_, i) {
+      var u = urls[+i];
+      return '<a href="' + u + '" target="_blank" rel="noopener noreferrer">' + u + '</a>';
+    });
+    return out;
+  }
+
+  function linkSourceTitles(html) {
+    var box = document.createElement('div');
+    box.innerHTML = html;
+    var items = box.querySelectorAll('.source li');
+    for (var i = 0; i < items.length; i++) {
+      var li = items[i];
+      var link = li.querySelector('a[href]');
+      if (!link) { continue; }
+      var href = link.getAttribute('href');
+      var prev = link.previousSibling;
+      if (prev && prev.nodeName === 'BR') { prev.parentNode.removeChild(prev); }
+      link.parentNode.removeChild(link);
+      var titleLink = document.createElement('a');
+      titleLink.className = 'source-title-link';
+      titleLink.href = href;
+      titleLink.target = '_blank';
+      titleLink.rel = 'noopener noreferrer';
+      while (li.firstChild && li.firstChild.nodeName !== 'BR') {
+        titleLink.appendChild(li.firstChild);
+      }
+      li.insertBefore(titleLink, li.firstChild);
+    }
+    return box.innerHTML;
+  }
+
+  function renderBody(md) {
+    var lines = String(md || '').replace(/\r\n?/g, '\n').split('\n');
+    var html = '';
+    var para = [];
+    var items = [];
+    var listTag = '';
+    var listStart = 1;
+    var quote = false;
+    var started = false;
+    var inSource = false;
+
+    function flushPara() {
+      if (para.length) {
+        html += '<p>' + inline(para.join(' ')) + '</p>';
+        para = [];
+      }
+    }
+    function flushList() {
+      if (listTag) {
+        var open = (listTag === 'ol' && listStart > 1) ? '<ol start="' + listStart + '">' : '<' + listTag + '>';
+        html += open + items.map(function (x) {
+          return '<li>' + x + '</li>';
+        }).join('') + '</' + listTag + '>';
+        listTag = '';
+        items = [];
+      }
+    }
+    function closeQuote() {
+      if (quote) { html += '</blockquote>'; quote = false; }
+    }
+    function closeSource() {
+      if (inSource) { html += '</div>'; inSource = false; }
+    }
+    function flushAll() { flushPara(); flushList(); closeQuote(); }
+
+    for (var i = 0; i < lines.length; i++) {
+      var rawLine = lines[i];
+      var t = rawLine.trim();
+      if (!t) { flushAll(); continue; }
+      if (/^-{3,}$/.test(t) || /^\*{3,}$/.test(t)) { flushAll(); closeSource(); html += '<hr>'; continue; }
+
+      var m = t.match(/^(#{1,6})\s+(.+)$/);
+      if (m) {
+        var lvl = m[1].length;
+        if (!started && lvl === 1) { continue; }
+        flushAll();
+        closeQuote();
+        closeSource();
+        started = true;
+        var hl = lvl <= 2 ? 2 : (lvl >= 4 ? 4 : 3);
+        html += '<h' + hl + '>' + inline(m[2]) + '</h' + hl + '>';
+        if (lvl <= 2 && m[2].trim() === '來源') { html += '<div class="source">'; inSource = true; }
+        continue;
+      }
+
+      if (t.charAt(0) === '>') {
+        if (!started) { continue; }
+        flushPara();
+        flushList();
+        if (!quote) { html += '<blockquote>'; quote = true; }
+        html += '<p>' + inline(t.replace(/^>\s?/, '')) + '</p>';
+        continue;
+      }
+
+      m = t.match(/^[-*+]\s+(.+)$/);
+      if (m) {
+        flushPara();
+        closeQuote();
+        started = true;
+        if (listTag && listTag !== 'ul') { flushList(); }
+        listTag = 'ul';
+        items.push(inline(m[1]));
+        continue;
+      }
+
+      m = t.match(/^(\d+)[.)]\s+(.+)$/);
+      if (m) {
+        flushPara();
+        closeQuote();
+        started = true;
+        if (listTag && listTag !== 'ol') { flushList(); }
+        listTag = 'ol';
+        listStart = parseInt(m[1], 10) || 1;
+        items.push(inline(m[2]));
+        continue;
+      }
+
+      if (listTag && /^\s+\S/.test(rawLine)) {
+        if (items.length) { items[items.length - 1] += '<br>' + inline(t); }
+        continue;
+      }
+
+      flushList();
+      closeQuote();
+      started = true;
+      para.push(t);
+    }
+
+    flushAll();
+    closeSource();
+    return linkSourceTitles(html);
+  }
+
+  function excerptOf(md) {
+    var lines = String(md || '').replace(/\r\n?/g, '\n').split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      var t = lines[i].trim();
+      if (!t) { continue; }
+      if (/^#{1,6}\s/.test(t) || t.charAt(0) === '>' || /^([-*+]|\d+[.)])\s/.test(t) || /^-{3,}$/.test(t)) { continue; }
+      var s = t
+        .replace(/\*\*([^*]+)\*\*/g, '$1')
+        .replace(/`([^`]+)`/g, '$1')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+      var m = s.match(/^(.+?[。！？!?])/);
+      return (m ? m[1] : s).slice(0, 80);
+    }
+    return '';
+  }
+
+  function api(path) {
+    var url = path + (path.indexOf('?') === -1 ? '?' : '&') + '_=' + Date.now();
+    return fetch(url, { cache: 'no-store' }).then(function (res) {
+      if (!res.ok) { throw new Error('HTTP ' + res.status); }
+      return res.json();
+    });
+  }
+
+  function apiJson(method, path, body) {
+    var opts = { method: method, cache: 'no-store', credentials: 'same-origin', headers: {} };
+    if (body !== undefined) {
+      opts.headers['Content-Type'] = 'application/json';
+      opts.body = JSON.stringify(body);
+    }
+    return fetch(path, opts).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (data) {
+        if (!res.ok) {
+          var err = new Error(data && data.error ? data.error : 'HTTP ' + res.status);
+          err.status = res.status;
+          throw err;
+        }
+        return data;
+      });
+    });
+  }
+
+  var toastTimer = null;
+  function toast(message) {
+    toastEl.textContent = message;
+    toastEl.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.hidden = true; }, 3400);
+  }
+
+  function isFav(file) {
+    return Object.prototype.hasOwnProperty.call(state.favs, file);
+  }
+
+  function findFav(file) {
+    return isFav(file) ? state.favs[file] : null;
+  }
+
+  function countText(n) {
+    var v = Number(n);
+    if (!isFinite(v) || v <= 0) { return '0'; }
+    return String(Math.floor(v));
+  }
+
+  function updateStatsDom(file, views, favCount) {
+    var i, nodes;
+    if (typeof views === 'number') {
+      nodes = listEl.querySelectorAll('[data-stat-views="' + file + '"]');
+      for (i = 0; i < nodes.length; i++) { nodes[i].textContent = countText(views); }
+      if (state.current === file) {
+        var vEl = document.getElementById('statViews');
+        if (vEl) { vEl.textContent = countText(views); }
+      }
+    }
+    if (typeof favCount === 'number') {
+      nodes = listEl.querySelectorAll('[data-stat-favs="' + file + '"]');
+      for (i = 0; i < nodes.length; i++) {
+        nodes[i].textContent = countText(favCount);
+        if (nodes[i].parentNode) {
+          nodes[i].parentNode.setAttribute('aria-label', '收藏 ' + countText(favCount) + ' 次');
+        }
+      }
+      if (state.current === file) {
+        var fEl = document.getElementById('statFavs');
+        if (fEl) {
+          fEl.textContent = countText(favCount);
+          if (fEl.parentNode) {
+            fEl.parentNode.setAttribute('aria-label', '收藏 ' + countText(favCount) + ' 次');
+          }
+        }
+      }
+    }
+  }
+
+  function recordView(file, c) {
+    if (!file || state.viewed[file]) { return; }
+    state.viewed[file] = true;
+    fetch('/api/view', {
+      method: 'POST',
+      cache: 'no-store',
+      credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ case_file: file })
+    }).then(function (res) {
+      if (!res.ok) { return null; }
+      return res.json();
+    }).then(function (d) {
+      if (!d || typeof d.views !== 'number') { return; }
+      if (c) { c.views = d.views; }
+      updateStatsDom(file, d.views, null);
+    }).catch(function () {});
+  }
+
+  function updateFavCount() {
+    var n = state.favList.length;
+    favCountEl.textContent = n ? String(n) : '';
+    favCountEl.hidden = !n;
+    if (exportBtn) { exportBtn.hidden = !state.me || !n; }
+    if (favSubEl) {
+      favSubEl.textContent = state.me
+        ? '共 ' + n + ' 篇收藏，點標題回到原文。'
+        : '把想再看的案例存起來，順手寫下自己的註記。';
+    }
+  }
+
+  function renderAuth() {
+    if (state.me) {
+      authAreaEl.innerHTML =
+        '<span class="auth-email" title="' + esc(state.me.email) + '">' + esc(state.me.email) + '</span>' +
+        '<button type="button" class="notify-btn" id="notifyBtn" aria-pressed="false">' +
+        '<span class="notify-dot" aria-hidden="true"></span>' +
+        '<span class="notify-text">通知</span>' +
+        '</button>' +
+        '<button type="button" class="auth-btn" id="authBtn">登出</button>';
+    } else {
+      authAreaEl.innerHTML = '<button type="button" class="auth-btn" id="authBtn">登入／註冊</button>';
+    }
+    renderNotify();
+  }
+
+  function resetNotify() {
+    state.notify.enabled = 0;
+    state.notify.smtp_ready = false;
+    state.notify.loaded = false;
+    state.notify.busy = false;
+  }
+
+  function renderNotify() {
+    var notify = state.notify;
+    var btn = document.getElementById('notifyBtn');
+    if (btn) {
+      var on = !!notify.enabled;
+      btn.classList.toggle('is-on', on);
+      btn.classList.toggle('is-unready', notify.loaded && !notify.smtp_ready);
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.disabled = !state.me || notify.busy || !notify.loaded;
+      var label = '每日案例完成寄信給我：' + (on ? '已開啟' : '關閉');
+      if (notify.loaded && !notify.smtp_ready) { label += '（SMTP 尚未設定）'; }
+      btn.title = label;
+      btn.setAttribute('aria-label', label);
+    }
+    if (!notifySettingEl) { return; }
+    notifySettingEl.hidden = !state.me;
+    if (!state.me) { return; }
+    notifyToggleEl.checked = !!notify.enabled;
+    notifyToggleEl.disabled = notify.busy || !notify.loaded;
+    if (!notify.loaded) {
+      notifyHintEl.textContent = '載入通知設定…';
+    } else if (notify.enabled && !notify.smtp_ready) {
+      notifyHintEl.textContent = '已開啟，但 SMTP 尚未設定，寄送會暫停；請管理員設定環境變數。';
+    } else if (!notify.smtp_ready) {
+      notifyHintEl.textContent = 'SMTP 尚未設定，現在開啟會失敗；請管理員設定 .env 的 SMTP 環境變數。';
+    } else if (notify.enabled) {
+      notifyHintEl.textContent = '已開啟。新案例完成後會寄完整內容到 ' + state.me.email + '。';
+    } else {
+      notifyHintEl.textContent = '開啟後，新案例完成時會寄完整內容到 ' + state.me.email + '。';
+    }
+  }
+
+  function loadNotify() {
+    if (!state.me) {
+      resetNotify();
+      renderNotify();
+      return Promise.resolve();
+    }
+    return apiJson('GET', '/api/notify').then(function (d) {
+      state.notify.enabled = d.enabled ? 1 : 0;
+      state.notify.smtp_ready = !!d.smtp_ready;
+      state.notify.loaded = true;
+      renderNotify();
+    }, function (err) {
+      state.notify.loaded = true;
+      state.notify.enabled = 0;
+      state.notify.smtp_ready = false;
+      if (err.status === 401) {
+        state.me = null;
+        state.authChecked = true;
+        state.favs = {};
+        state.favList = [];
+        state.favLoaded = false;
+        renderAuth();
+        syncFavUi();
+        renderFavorites();
+      } else {
+        renderNotify();
+        toast('通知設定載入失敗，請稍後重新整理');
+      }
+    });
+  }
+
+  function setNotify(enabled) {
+    if (!state.me || state.notify.busy || !state.notify.loaded) {
+      renderNotify();
+      return;
+    }
+    state.notify.busy = true;
+    renderNotify();
+    apiJson('PUT', '/api/notify', { enabled: !!enabled }).then(function (d) {
+      state.notify.enabled = d.enabled ? 1 : 0;
+      state.notify.smtp_ready = !!d.smtp_ready;
+      toast(state.notify.enabled ? '已開啟每日案例 email 通知' : '已關閉每日案例 email 通知');
+    }, function (err) {
+      if (err.status === 401) {
+        state.me = null;
+        state.authChecked = true;
+        state.favs = {};
+        state.favList = [];
+        state.favLoaded = false;
+        renderAuth();
+        syncFavUi();
+        renderFavorites();
+        toast('請重新登入');
+        openAuth('login');
+      } else {
+        toast(err.message || '通知設定失敗，請稍後再試');
+      }
+    }).then(function () {
+      state.notify.busy = false;
+      renderNotify();
+    });
+  }
+
+  function showAuthError(message) {
+    authError.textContent = message;
+    authError.hidden = false;
+  }
+
+  function setAuthMode(mode) {
+    state.authMode = mode === 'register' ? 'register' : 'login';
+    var login = state.authMode === 'login';
+    authTitle.textContent = login ? '登入' : '建立帳號';
+    authTabLogin.setAttribute('aria-selected', login ? 'true' : 'false');
+    authTabRegister.setAttribute('aria-selected', login ? 'false' : 'true');
+    authSubmit.textContent = login ? '登入' : '註冊並登入';
+    authHint.textContent = login
+      ? '登入後就能收藏案例、寫註記，並設定每日 email 通知。'
+      : '密碼至少 8 碼。收藏、註記與 email 通知只存在這個站台。';
+    authPass.setAttribute('autocomplete', login ? 'current-password' : 'new-password');
+    authError.hidden = true;
+    authError.textContent = '';
+  }
+
+  function openAuth(mode, pending) {
+    setAuthMode(mode || 'login');
+    if (pending) { state.pendingFav = pending; }
+    authForm.reset();
+    if (typeof authDlg.showModal === 'function') {
+      if (!authDlg.open) { authDlg.showModal(); }
+    } else {
+      authDlg.setAttribute('open', '');
+    }
+    setTimeout(function () { authEmail.focus(); }, 30);
+  }
+
+  function closeAuth() {
+    if (typeof authDlg.close === 'function') { authDlg.close(); }
+    else { authDlg.removeAttribute('open'); }
+  }
+
+  function mergeFavorite(fav) {
+    state.favList = state.favList.filter(function (f) { return f.case_file !== fav.case_file; });
+    state.favList.unshift(fav);
+    state.favs[fav.case_file] = fav;
+  }
+
+  function renderFavorites() {
+    renderNotify();
+    updateFavCount();
+    if (!state.authChecked) {
+      favListEl.innerHTML = '<p class="loading">載入帳號狀態…</p>';
+      favStateEl.hidden = true;
+      return 0;
+    }
+    if (!state.me) {
+      favListEl.innerHTML = '';
+      favStateEl.hidden = false;
+      favStateEl.innerHTML = '<div class="state">' +
+        '<p class="state-main">登入後就能收藏案例</p>' +
+        '<p class="state-sub">匿名瀏覽不受影響；要存收藏與註記時再登入就好。</p>' +
+        '<p><button type="button" class="btn btn-primary" data-auth="login">登入／註冊</button></p>' +
+        '</div>';
+      return 0;
+    }
+    if (!state.favLoaded) {
+      favListEl.innerHTML = '<p class="loading">載入收藏…</p>';
+      favStateEl.hidden = true;
+      return 0;
+    }
+    if (!state.favList.length) {
+      favListEl.innerHTML = '';
+      favStateEl.hidden = false;
+      favStateEl.innerHTML = stateBlock(
+        '還沒有收藏。',
+        '在案例卡片按收藏鈕（星星）或文章頁的「收藏這篇」，就會出現在這裡。'
+      );
+      return 0;
+    }
+    var list = visibleFavorites();
+    if (!list.length) {
+      favListEl.innerHTML = '';
+      favStateEl.hidden = false;
+      favStateEl.innerHTML = stateBlock(
+        '沒有符合「' + esc(state.query) + '」的收藏。',
+        '試試另一個關鍵字，或清空搜尋。'
+      );
+      return 0;
+    }
+    favStateEl.hidden = true;
+    favStateEl.innerHTML = '';
+    var html = '';
+    list.forEach(function (f) { html += favoriteItemHtml(f); });
+    favListEl.innerHTML = html;
+    if (state.editingFav) {
+      var ta = favListEl.querySelector('.fav-editor .fav-input');
+      if (ta) { ta.focus(); }
+    }
+    return list.length;
+  }
+
+  function favoriteItemHtml(f) {
+    var file = f.case_file;
+    var note = f.note || '';
+    var editing = state.editingFav === file;
+    var href = '#/case/' + file.split('/').map(encodeURIComponent).join('/');
+    var html = '<article class="fav-item" data-file="' + esc(file) + '">' +
+      '<div class="fav-item-head">' +
+      '<a class="fav-item-title" href="' + esc(href) + '">' + esc(displayCaseTitle(f.title || file)) + '</a>' +
+      '<span class="fav-item-date">' + esc(f.date || '') + '</span>' +
+      '</div>' +
+      '<div class="fav-item-meta">' +
+      (f.theme ? '<span>' + esc(f.theme) + '</span>' : '') +
+      (f.exists === false ? '<span class="fav-item-missing">原文已不在線上</span>' : '') +
+      '</div>';
+    if (editing) {
+      html += '<form class="fav-editor" data-editor="' + esc(file) + '">' +
+        '<textarea class="fav-input" rows="3" maxlength="2000" aria-label="收藏註記">' + esc(note) + '</textarea>' +
+        '<div class="fav-editor-actions">' +
+        '<button type="submit" class="btn btn-primary">儲存</button>' +
+        '<button type="button" class="btn btn-ghost" data-fav-act="cancel">取消</button>' +
+        '</div></form>';
+    } else {
+      html += '<p class="fav-item-note' + (note ? '' : ' is-empty') + '">' +
+        (note ? esc(note) : '尚未填寫註記') + '</p>' +
+        '<div class="fav-item-actions">' +
+        '<button type="button" class="btn btn-ghost" data-fav-act="edit">編輯註記</button>' +
+        '<button type="button" class="btn btn-ghost btn-danger" data-fav-act="remove">取消收藏</button>' +
+        '</div>';
+    }
+    return html + '</article>';
+  }
+
+  function visibleFavorites() {
+    var list = terms();
+    if (!list.length) { return state.favList.slice(); }
+    return state.favList.filter(function (f) {
+      var h = [f.date, f.theme, f.title, f.note].join('\n').toLowerCase();
+      for (var i = 0; i < list.length; i++) {
+        if (h.indexOf(list[i]) === -1) { return false; }
+      }
+      return true;
+    });
+  }
+
+  function localDay(value) {
+    if (!value) { return ''; }
+    var d = new Date(value);
+    if (isNaN(d.getTime())) { return String(value).slice(0, 10); }
+    return d.getFullYear() + '-' +
+      String(d.getMonth() + 1).padStart(2, '0') + '-' +
+      String(d.getDate()).padStart(2, '0');
+  }
+
+  function favoritesMarkdown() {
+    var today = localDay(new Date());
+    var lines = [
+      '# 我的收藏',
+      '',
+      '- 匯出時間：' + today,
+      '- 共 ' + state.favList.length + ' 篇',
+      ''
+    ];
+    state.favList.forEach(function (f) {
+      var link = location.origin + location.pathname +
+        '#/case/' + f.case_file.split('/').map(encodeURIComponent).join('/');
+      lines.push('## ' + displayCaseTitle(f.title || f.case_file), '');
+      lines.push('- 日期：' + (f.date || ''));
+      lines.push('- 收藏日期：' + localDay(f.created_at));
+      lines.push('- 連結：' + link);
+      if (f.note) {
+        lines.push('', '> ' + String(f.note).replace(/\r?\n/g, '\n> '));
+      }
+      lines.push('');
+    });
+    return { text: lines.join('\n'), date: today };
+  }
+
+  function exportFavorites() {
+    if (!state.favList.length) { return; }
+    var doc = favoritesMarkdown();
+    var blob = new Blob([doc.text], { type: 'text/markdown;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = '我的收藏-' + doc.date + '.md';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+    toast('已匯出 ' + state.favList.length + ' 篇收藏');
+  }
+
+  function favBoxHtml(file) {
+    var fav = findFav(file);
+    if (!state.me) {
+      return '<div class="fav-box" id="favBox">' +
+        '<div class="fav-box-head"><span class="fav-box-title">收藏</span></div>' +
+        '<p class="fav-box-note">登入後就能收藏這篇案例，寫下自己的註記，之後回頭找更快。</p>' +
+        '<div class="fav-actions"><button type="button" class="btn btn-primary" data-fav-act="login">登入／註冊</button></div>' +
+        '</div>';
+    }
+    return '<div class="fav-box" id="favBox">' +
+      '<div class="fav-box-head"><span class="fav-box-title">收藏與註記</span>' +
+      (fav ? '<span class="fav-badge">已收藏</span>' : '') + '</div>' +
+      '<textarea id="favNote" class="fav-input" rows="2" maxlength="2000" ' +
+      'placeholder="為什麼想留下這篇？之後要拿來做什麼？" aria-label="收藏註記">' +
+      esc(fav ? fav.note : '') + '</textarea>' +
+      '<div class="fav-actions">' +
+      '<button type="button" class="btn btn-primary" data-fav-act="save">' +
+      (fav ? '儲存註記' : '收藏這篇') + '</button>' +
+      (fav ? '<button type="button" class="btn btn-ghost btn-danger" data-fav-act="remove">取消收藏</button>' : '') +
+      '</div></div>';
+  }
+
+  function syncFavUi() {
+    var buttons = listEl.querySelectorAll('.card-fav');
+    for (var i = 0; i < buttons.length; i++) {
+      var btn = buttons[i];
+      var file = btn.getAttribute('data-fav');
+      var on = isFav(file);
+      var wasOn = btn.classList.contains('is-on');
+      var c = findCase(file);
+      var title = c ? c.title : file;
+      btn.classList.toggle('is-on', on);
+      if (on && !wasOn) {
+        btn.classList.remove('is-popping');
+        void btn.offsetWidth;
+        btn.classList.add('is-popping');
+      } else if (!on) {
+        btn.classList.remove('is-popping');
+      }
+      btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+      btn.textContent = '';
+      btn.title = on ? '已收藏，點一下編輯註記' : '收藏這篇案例';
+      btn.setAttribute('aria-label', (on ? '已收藏，開啟註記：' : '收藏：') + title);
+    }
+  }
+
+  function loadFavorites() {
+    if (!state.me) { return Promise.resolve(); }
+    return apiJson('GET', '/api/favorites').then(function (d) {
+      state.favList = d.favorites || [];
+      state.favs = {};
+      state.favList.forEach(function (f) { state.favs[f.case_file] = f; });
+      state.favLoaded = true;
+      syncFavUi();
+      renderFavorites();
+      if (document.body.classList.contains('is-detailing')) { renderDetail(); }
+    }, function (err) {
+      if (err.status === 401) {
+        state.me = null;
+        state.favs = {};
+        state.favList = [];
+        state.favLoaded = false;
+        renderAuth();
+      } else {
+        state.favLoaded = true;
+        toast('收藏清單載入失敗，請稍後再試');
+      }
+      syncFavUi();
+      renderFavorites();
+    });
+  }
+
+  function loadMe() {
+    return apiJson('GET', '/api/me').then(function (d) {
+      state.me = { email: d.email };
+      state.authChecked = true;
+      renderAuth();
+      return Promise.all([loadFavorites(), loadNotify()]);
+    }, function () {
+      state.me = null;
+      state.authChecked = true;
+      resetNotify();
+      renderAuth();
+      renderFavorites();
+    });
+  }
+
+  function logout() {
+    apiJson('POST', '/api/logout').catch(function () {}).then(function () {
+      state.me = null;
+      state.favs = {};
+      state.favList = [];
+      state.favLoaded = false;
+      state.editingFav = null;
+      resetNotify();
+      renderAuth();
+      syncFavUi();
+      renderFavorites();
+      if (document.body.classList.contains('is-detailing')) { renderDetail(); }
+      toast('已登出');
+    });
+  }
+
+  function submitAuth(e) {
+    e.preventDefault();
+    var email = authEmail.value.trim();
+    var password = authPass.value;
+    if (!email) { showAuthError('請填 Email。'); return; }
+    if (!password) { showAuthError('請填密碼。'); return; }
+    if (state.authMode === 'register' && password.length < 8) {
+      showAuthError('密碼至少 8 碼。');
+      return;
+    }
+    var registering = state.authMode === 'register';
+    var pending = state.pendingFav;
+    state.pendingFav = null;
+    authSubmit.disabled = true;
+    authError.hidden = true;
+    apiJson('POST', registering ? '/api/register' : '/api/login', {
+      email: email,
+      password: password
+    }).then(function (d) {
+      state.me = { email: d.email };
+      closeAuth();
+      authForm.reset();
+      renderAuth();
+      toast(registering ? '註冊成功，已登入' : '已登入');
+      return Promise.all([loadFavorites(), loadNotify()]).then(function () {
+        if (pending && pending.file) {
+          return saveFavorite(pending.file, pending.note || '');
+        }
+      });
+    }, function (err) {
+      showAuthError(err.status === 401 ? 'Email 或密碼錯誤。' : (err.message || '登入失敗。'));
+    }).then(function () {
+      authSubmit.disabled = false;
+    });
+  }
+
+  function favError(err, file, note) {
+    if (err.status === 401) {
+      state.me = null;
+      state.favs = {};
+      state.favList = [];
+      state.favLoaded = false;
+      renderAuth();
+      syncFavUi();
+      renderFavorites();
+      openAuth('login', { file: file, note: note || '' });
+      return;
+    }
+    toast(err.message || '操作失敗，請再試一次');
+  }
+
+  function saveFavorite(file, note) {
+    return apiJson('PUT', '/api/favorite', { case_file: file, note: note || '' }).then(function (d) {
+      state.favLoaded = true;
+      state.editingFav = null;
+      mergeFavorite(d.favorite);
+      var c = findCase(file);
+      if (c && typeof d.fav_count === 'number') { c.fav_count = d.fav_count; }
+      if (typeof d.fav_count === 'number') { updateStatsDom(file, null, d.fav_count); }
+      syncFavUi();
+      renderFavorites();
+      if (document.body.classList.contains('is-detailing')) { renderDetail(); }
+      toast(note ? '已儲存收藏與註記' : '已收藏，可到「我的收藏」補上註記');
+      return d.favorite;
+    }, function (err) {
+      favError(err, file, note);
+      return null;
+    });
+  }
+
+  function removeFavorite(file) {
+    return apiJson('DELETE', '/api/favorite?case_file=' + encodeURIComponent(file)).then(function (d) {
+      delete state.favs[file];
+      state.favList = state.favList.filter(function (f) { return f.case_file !== file; });
+      if (state.editingFav === file) { state.editingFav = null; }
+      var c = findCase(file);
+      if (c && typeof d.fav_count === 'number') { c.fav_count = d.fav_count; }
+      if (typeof d.fav_count === 'number') { updateStatsDom(file, null, d.fav_count); }
+      syncFavUi();
+      renderFavorites();
+      if (document.body.classList.contains('is-detailing')) { renderDetail(); }
+      toast('已取消收藏');
+    }, function (err) {
+      favError(err, file, '');
+    });
+  }
+
+  function updateTabs(isFavView) {
+    tabAllEl.classList.toggle('is-active', !isFavView);
+    tabFavEl.classList.toggle('is-active', isFavView);
+    if (isFavView) {
+      tabFavEl.setAttribute('aria-current', 'page');
+      tabAllEl.removeAttribute('aria-current');
+    } else {
+      tabAllEl.setAttribute('aria-current', 'page');
+      tabFavEl.removeAttribute('aria-current');
+    }
+  }
+
+  function findCase(file) {
+    for (var i = 0; i < state.cases.length; i++) {
+      if (state.cases[i].file === file) { return state.cases[i]; }
+    }
+    return null;
+  }
+
+  function hasText(file) {
+    return Object.prototype.hasOwnProperty.call(state.text, file);
+  }
+
+  function haystack(c) {
+    return [c.date, c.theme, c.title, state.text[c.file] || ''].join('\n').toLowerCase();
+  }
+
+  function visibleCases() {
+    var list = terms();
+    if (!list.length) { return state.cases.slice(); }
+    return state.cases.filter(function (c) {
+      var h = haystack(c);
+      for (var i = 0; i < list.length; i++) {
+        if (h.indexOf(list[i]) === -1) { return false; }
+      }
+      return true;
+    });
+  }
+
+  function ensureText(file) {
+    if (hasText(file)) { return Promise.resolve(state.text[file]); }
+    if (state.pending[file]) { return state.pending[file]; }
+    var p = api('/api/case?name=' + encodeURIComponent(file)).then(function (d) {
+      state.text[file] = d.content || '';
+      delete state.err[file];
+      return state.text[file];
+    }).catch(function (err) {
+      state.err[file] = true;
+      throw err;
+    });
+    state.pending[file] = p;
+    p.then(function () { delete state.pending[file]; }, function () { delete state.pending[file]; });
+    return p;
+  }
+
+  function stateBlock(main, sub) {
+    return '<div class="state"><p class="state-main">' + main + '</p>' +
+      (sub ? '<p class="state-sub">' + sub + '</p>' : '') + '</div>';
+  }
+
+  function emptyBlock() {
+    return stateBlock('還沒有案例。等今天的日報就好。', '');
+  }
+
+  function noResultBlock() {
+    return stateBlock(
+      '沒有符合「' + esc(state.query) + '」的案例。',
+      '試試另一個關鍵字，或清空搜尋。'
+    );
+  }
+
+  function renderList(shown) {
+    if (!state.loaded) { return; }
+    listEl.removeAttribute('aria-busy');
+    if (!shown || !shown.length) {
+      listEl.innerHTML = '';
+      listStateEl.innerHTML = state.cases.length ? noResultBlock() : emptyBlock();
+      listStateEl.hidden = false;
+      return;
+    }
+    listStateEl.hidden = true;
+    listStateEl.innerHTML = '';
+
+    var list = terms();
+    var html = '';
+    var month = '';
+    shown.forEach(function (c) {
+      var key = String(c.date || '').slice(0, 7);
+      if (key !== month) {
+        month = key;
+        var p = key.split('-');
+        var label = (p.length === 2 && p[0] && p[1]) ? p[0] + ' 年 ' + p[1] + ' 月' : key;
+        html += '<h2 class="month-marker">' + esc(label) + '</h2>';
+      }
+      var active = c.file === state.current;
+      var excerpt = hasText(c.file) ? excerptOf(state.text[c.file]) : '';
+      var on = isFav(c.file);
+      html += '<div class="card-wrap">' +
+        '<button type="button" class="card' + (active ? ' is-active' : '') + '" data-file="' + esc(c.file) + '"' +
+        (active ? ' aria-current="true"' : '') + '>' +
+        '<span class="card-tags"><span class="tag tag-date">' + esc(c.date) + '</span>' +
+        (c.theme ? '<span class="tag tag-theme">' + esc(c.theme) + '</span>' : '') + '</span>' +
+        '<span class="card-title">' + highlight(displayCaseTitle(c.title), list) + '</span>' +
+        '<span class="card-excerpt">' + highlight(excerpt, list) + '</span>' +
+        '<span class="card-stats">' +
+        '<span class="stat-views">瀏覽 <span data-stat-views="' + esc(c.file) + '">' + countText(c.views) + '</span></span>' +
+        '<span class="stat-favs" role="img" aria-label="收藏 ' + countText(c.fav_count) + ' 次">' +
+        '<span class="stat-ico" aria-hidden="true"></span>' +
+        '<span data-stat-favs="' + esc(c.file) + '">' + countText(c.fav_count) + '</span>' +
+        '</span>' +
+        '</span>' +
+        '</button>' +
+        '<button type="button" class="card-fav' + (on ? ' is-on' : '') + '" data-fav="' + esc(c.file) + '"' +
+        ' aria-pressed="' + (on ? 'true' : 'false') + '"' +
+        ' aria-label="' + (on ? '已收藏，開啟註記：' : '收藏：') + esc(c.title) + '"' +
+        ' title="' + (on ? '已收藏，點一下編輯註記' : '收藏這篇案例') + '"></button>' +
+        '</div>';
+    });
+    listEl.innerHTML = html;
+  }
+
+  function renderSide() {
+    if (!listSideEl) { return; }
+    if (!state.loaded || !state.cases.length) {
+      listSideEl.hidden = true;
+      listSideEl.innerHTML = '';
+      return;
+    }
+    var latest = state.cases[0];
+    var excerpt = hasText(latest.file) ? excerptOf(state.text[latest.file]) : '';
+    var href = '#/case/' + latest.file.split('/').map(encodeURIComponent).join('/');
+    var counts = Object.create(null);
+    var order = [];
+    state.cases.forEach(function (c) {
+      var theme = c.theme || '未分類';
+      if (!counts[theme]) {
+        counts[theme] = 0;
+        order.push(theme);
+      }
+      counts[theme] += 1;
+    });
+    order.sort(function (a, b) { return counts[b] - counts[a]; });
+    var themes = order.map(function (theme) {
+      return '<li class="side-theme"><span>' + esc(theme) + '</span>' +
+        '<span class="side-theme-count">' + counts[theme] + '</span></li>';
+    }).join('');
+    listSideEl.hidden = false;
+    listSideEl.innerHTML =
+      '<section class="side-block">' +
+      '<h2 class="side-title">最新一期</h2>' +
+      '<a class="side-latest" href="' + esc(href) + '">' +
+      '<span class="side-eyebrow">' + esc(latest.date) +
+      (latest.theme ? ' · ' + esc(latest.theme) : '') + '</span>' +
+      '<span class="side-latest-title">' + esc(displayCaseTitle(latest.title)) + '</span>' +
+      (excerpt ? '<span class="side-latest-excerpt">' + esc(excerpt) + '</span>' : '') +
+      '</a></section>' +
+      '<section class="side-block">' +
+      '<h2 class="side-title">主題分佈</h2>' +
+      '<ul class="side-themes">' + themes + '</ul>' +
+      '<p class="side-note">依目前 ' + state.cases.length + ' 期統計</p>' +
+      '</section>';
+  }
+
+  function displayCaseTitle(title) {
+    return String(title || '').replace(/^經典案例日刊｜/, '');
+  }
+
+  function shortCaseTitle(title) {
+    var parts = String(title || '').split('｜');
+    return parts.length > 1 ? parts[parts.length - 1].trim() : String(title || '');
+  }
+
+  function pnNavHtml(c) {
+    var idx = -1;
+    for (var i = 0; i < state.cases.length; i++) {
+      if (state.cases[i].file === c.file) { idx = i; break; }
+    }
+    if (idx === -1) { return ''; }
+    var older = state.cases[idx + 1];
+    var newer = state.cases[idx - 1];
+    if (!older && !newer) { return ''; }
+    function link(target, label, dir) {
+      if (!target) { return '<span class="pn-link is-' + dir + '" aria-hidden="true"></span>'; }
+      var href = '#/case/' + target.file.split('/').map(encodeURIComponent).join('/');
+      return '<a class="pn-link is-' + dir + '" href="' + esc(href) + '">' +
+        '<span class="pn-label"><span>' + esc(label) + '</span></span>' +
+        '<span class="pn-title">' + esc(shortCaseTitle(target.title)) + '</span>' +
+        '</a>';
+    }
+    return '<nav class="pn-nav" aria-label="前後篇">' +
+      link(older, '← 上一篇', 'prev') +
+      link(newer, '下一篇 →', 'next') +
+      '</nav>';
+  }
+
+  var tocObserver = null;
+  var tocScrollHandler = null;
+
+  function setTocActive(id) {
+    var links = detailEl.querySelectorAll('.toc-link');
+    for (var i = 0; i < links.length; i++) {
+      if (links[i].getAttribute('data-toc') === id) {
+        links[i].setAttribute('aria-current', 'location');
+      } else {
+        links[i].removeAttribute('aria-current');
+      }
+    }
+  }
+
+  function currentTocTarget(targets) {
+    var line = 100;
+    var best = null;
+    var first = null;
+    for (var i = 0; i < targets.length; i++) {
+      var top = targets[i].getBoundingClientRect().top;
+      if (top <= line) { best = targets[i]; }
+      if (top > line && !first) { first = targets[i]; }
+    }
+    return best || first;
+  }
+
+  function initToc() {
+    if (tocObserver) {
+      tocObserver.disconnect();
+      tocObserver = null;
+    }
+    if (tocScrollHandler) {
+      window.removeEventListener('scroll', tocScrollHandler);
+      tocScrollHandler = null;
+    }
+    var links = detailEl.querySelectorAll('.toc-link');
+    if (!links.length) { return; }
+    var targets = [];
+    for (var i = 0; i < links.length; i++) {
+      var target = document.getElementById(links[i].getAttribute('data-toc'));
+      if (target) { targets.push(target); }
+    }
+    if (!targets.length) { return; }
+    function update() {
+      var picked = currentTocTarget(targets);
+      if (picked) { setTocActive(picked.id); }
+    }
+    var ticking = false;
+    tocScrollHandler = function () {
+      if (ticking) { return; }
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        ticking = false;
+        update();
+      });
+    };
+    window.addEventListener('scroll', tocScrollHandler, { passive: true });
+    if (typeof IntersectionObserver === 'function') {
+      tocObserver = new IntersectionObserver(update, { rootMargin: '0px 0px -60% 0px', threshold: 0 });
+      targets.forEach(function (item) { tocObserver.observe(item); });
+    }
+    update();
+  }
+
+  function renderDetail() {
+    var backLabel = state.backHash === '#/favorites' ? '回我的收藏' : '回列表';
+    var backHtml = document.body.classList.contains('is-detailing')
+      ? '<button type="button" class="back" id="backBtn">' + backLabel + '</button>'
+      : '';
+
+    function paint(inner) {
+      var entering = !!state.current && detailEl.getAttribute('data-rendered') !== state.current;
+      detailEl.innerHTML = backHtml + inner;
+      detailEl.setAttribute('data-rendered', state.current || '');
+      detailEl.classList.remove('is-entering');
+      if (entering) {
+        void detailEl.offsetWidth;
+        detailEl.classList.add('is-entering');
+      }
+      var backBtn = document.getElementById('backBtn');
+      if (backBtn) { backBtn.addEventListener('click', backToList); }
+      if (state.focusNote && state.focusNote === state.current) {
+        state.focusNote = null;
+        var ta = document.getElementById('favNote');
+        if (ta) {
+          ta.focus();
+          try { ta.setSelectionRange(ta.value.length, ta.value.length); } catch (e) {}
+        }
+      }
+      initToc();
+    }
+
+    if (!state.current) {
+      paint(state.cases.length ? noResultBlock() : emptyBlock());
+      return;
+    }
+
+    var c = findCase(state.current);
+    if (!c) {
+      paint(state.cases.length ? noResultBlock() : emptyBlock());
+      return;
+    }
+
+    var body;
+    var sourceHtml = '';
+    var toc = [];
+    var titleHtml = highlight(displayCaseTitle(c.title), terms());
+    var meta = esc(c.date) + (c.theme ? '｜' + esc(c.theme) : '');
+    var gloss = { entries: [], seen: Object.create(null), allowed: Object.create(null) };
+    var glossaryBlock = '';
+    var summary = '';
+    if (state.err[c.file]) {
+      body = stateBlock('載入失敗，請按重新整理。', '');
+    } else if (!hasText(c.file)) {
+      body = '<p class="loading">載入中…</p>';
+    } else {
+      var bodyHtml = mergeFlowParagraphs(renderBody(state.text[c.file]));
+      pickGlossTerms([bodyHtml]).forEach(function (g) {
+        gloss.allowed[g.term] = true;
+      });
+      var parts = articleParts(annotateTerms(bodyHtml, gloss));
+      body = '<div class="prose">' + parts.html + '</div>';
+      sourceHtml = parts.source;
+      toc = parts.toc;
+      glossaryBlock = glossaryHtml(gloss);
+      summary = summaryHtml(state.text[c.file], toc);
+    }
+
+    var readerClass = 'reader' +
+      (glossaryBlock ? '' : ' no-glossary') +
+      (summary ? '' : ' no-summary');
+
+    if (hasText(c.file) && !state.err[c.file]) { recordView(c.file, c); }
+
+    paint(
+      '<div class="' + readerClass + '">' +
+      '<div class="reader-main">' +
+      '<h1>' + titleHtml + '</h1>' +
+      '<p class="dateline">' +
+      '<span>' + meta + '</span>' +
+      '<span class="dateline-stats">' +
+      '<span class="stat-views">瀏覽 <span id="statViews">' + countText(c.views) + '</span></span>' +
+      '<span class="stat-favs" role="img" aria-label="收藏 ' + countText(c.fav_count) + ' 次">' +
+      '<span class="stat-ico" aria-hidden="true"></span>' +
+      '<span id="statFavs">' + countText(c.fav_count) + '</span>' +
+      '</span>' +
+      '</span>' +
+      '</p>' +
+      body +
+      favBoxHtml(c.file) +
+      sourceHtml +
+      pnNavHtml(c) +
+      '</div>' +
+      (glossaryBlock
+        ? '<aside class="reader-glossary" aria-labelledby="glossaryTitle"><div class="rail-sticky">' + glossaryBlock + '</div></aside>'
+        : '') +
+      summary +
+      '</div>'
+    );
+  }
+
+  function updateCount(shown) {
+    var hasQuery = !!state.query;
+    countEl.hidden = !hasQuery;
+    clearEl.hidden = !qEl.value;
+    qEl.classList.toggle('has-value', !!qEl.value);
+    if (hasQuery) { countEl.textContent = shown + ' 篇'; }
+  }
+
+  function updateFoot() {
+    if (!footCountEl) { return; }
+    footCountEl.textContent = state.loaded ? String(state.cases.length) : '—';
+  }
+
+  function applyFilter() {
+    var shown = visibleCases();
+    state.shown = shown.length;
+    renderList(shown);
+    renderSide();
+    renderDetail();
+    if (document.body.classList.contains('is-favorites')) {
+      updateCount(renderFavorites());
+    } else {
+      updateCount(shown.length);
+    }
+  }
+
+  function preloadAll() {
+    var todo = state.cases.filter(function (c) { return !hasText(c.file); });
+    if (!todo.length) { state.indexing = false; return; }
+    state.indexing = true;
+    var jobs = todo.map(function (c) {
+      return ensureText(c.file).catch(function () { return null; });
+    });
+    Promise.all(jobs).then(function () {
+      state.indexing = false;
+      applyFilter();
+    });
+  }
+
+  function parseRoute() {
+    var h = location.hash || '';
+    if (h === '#/favorites') { return { detailing: false, favorites: true, file: null }; }
+    var m = h.match(/^#\/case\/(.+)$/);
+    if (!m) { return { detailing: false, favorites: false, file: null }; }
+    var file = m[1];
+    try { file = decodeURIComponent(file); } catch (e) {}
+    return { detailing: true, favorites: false, file: file };
+  }
+
+  function focusBack() {
+    if (document.activeElement && document.activeElement.id === 'favNote') { return; }
+    var b = document.getElementById('backBtn');
+    if (b) { b.focus(); }
+  }
+
+  function ensureCurrent(focus) {
+    var file = state.current;
+    if (!file || hasText(file) || state.err[file]) {
+      if (focus) { focusBack(); }
+      return;
+    }
+    if (focus) { focusBack(); }
+    ensureText(file).then(function () {
+      if (state.current === file) {
+        renderDetail();
+        if (focus) { focusBack(); }
+      }
+    }).catch(function () {
+      if (state.current === file) {
+        renderDetail();
+        if (focus) { focusBack(); }
+      }
+    });
+  }
+
+  function renderRoute(restoreScroll) {
+    var r = parseRoute();
+    if (r.detailing && state.loaded && !findCase(r.file)) {
+      location.replace('#/');
+      return;
+    }
+    document.body.classList.toggle('is-detailing', r.detailing);
+    document.body.classList.toggle('is-favorites', r.favorites);
+    updateTabs(r.favorites);
+
+    if (r.favorites) {
+      state.current = null;
+      state.listScroll = 0;
+      applyFilter();
+      if (restoreScroll) { window.scrollTo(0, 0); }
+      return;
+    }
+
+    if (r.detailing) {
+      state.current = r.file;
+    } else {
+      state.backHash = null;
+      if (state.current && !findCase(state.current)) {
+        state.current = null;
+      }
+    }
+    applyFilter();
+    if (r.detailing) {
+      if (restoreScroll) {
+        window.scrollTo(0, 0);
+        ensureCurrent(true);
+      } else {
+        ensureCurrent(false);
+      }
+    } else if (restoreScroll) {
+      window.scrollTo(0, state.listScroll);
+      if (state.restoreFocus) {        state.restoreFocus = false;
+        var card = state.lastFile
+          ? listEl.querySelector('.card[data-file="' + state.lastFile + '"]')
+          : null;
+        if (card) {
+          try { card.focus({ preventScroll: true }); } catch (e) { card.focus(); }
+        }
+      }
+    }
+  }
+
+  function select(file) {
+    state.listScroll = window.scrollY;
+    state.lastFile = file;
+    state.backHash = null;
+    location.hash = '#/case/' + file.split('/').map(encodeURIComponent).join('/');
+  }
+
+  function backToList() {
+    state.restoreFocus = true;
+    location.hash = state.backHash || '#/';
+  }
+
+  function toList() {
+    if (document.body.classList.contains('is-detailing')) {
+      state.listScroll = 0;
+      location.hash = '#/';
+    }
+  }
+
+  function refresh() {
+    refreshBtn.disabled = true;
+    return api('/api/cases').then(function (d) {
+      var next = (d.cases || []).slice();
+
+      state.cases = next;
+
+      // 文章內容可能已被改版，重新整理時一律重抓，避免舊內容被記憶體快取蓋住。
+      state.text = {};
+      state.err = {};
+      state.loaded = true;
+      updateFoot();
+
+      if (state.current && !findCase(state.current)) { state.current = null; }
+
+      renderRoute(state.boot);
+      state.boot = false;
+      preloadAll();
+    }).catch(function () {
+      listEl.innerHTML = '';
+      listEl.removeAttribute('aria-busy');
+      listStateEl.innerHTML = stateBlock('載入失敗，請按重新整理。', '');
+      listStateEl.hidden = false;
+      detailEl.innerHTML = stateBlock('載入失敗，請按重新整理。', '');
+    }).then(function () {
+      refreshBtn.disabled = false;
+    });
+  }
+
+  listEl.addEventListener('click', function (e) {
+    var favBtn = e.target.closest ? e.target.closest('.card-fav') : null;
+    if (favBtn) {
+      var favFile = favBtn.getAttribute('data-fav');
+      if (!favFile) { return; }
+      if (!state.me) {
+        openAuth('login', { file: favFile, note: '' });
+      } else if (isFav(favFile)) {
+        state.focusNote = favFile;
+        select(favFile);
+      } else {
+        saveFavorite(favFile, '');
+      }
+      return;
+    }
+    var card = e.target.closest ? e.target.closest('.card') : null;
+    if (!card) { return; }
+    var file = card.getAttribute('data-file');
+    if (file) { select(file); }
+  });
+
+  detailEl.addEventListener('click', function (e) {
+    var tocLink = e.target.closest ? e.target.closest('[data-toc]') : null;
+    if (tocLink) {
+      var tocTarget = document.getElementById(tocLink.getAttribute('data-toc'));
+      if (tocTarget) {
+        var reduceToc = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        try {
+          tocTarget.scrollIntoView({ behavior: reduceToc ? 'auto' : 'smooth', block: 'start' });
+        } catch (errToc) {
+          tocTarget.scrollIntoView();
+        }
+        setTocActive(tocTarget.id);
+        try { tocTarget.focus({ preventScroll: true }); } catch (errFocus) {}
+      }
+      return;
+    }
+    var act = e.target.closest ? e.target.closest('[data-fav-act]') : null;
+    if (act) {
+      var action = act.getAttribute('data-fav-act');
+      var current = state.current;
+      if (!current) { return; }
+      if (action === 'login') {
+        openAuth('login', { file: current, note: '' });
+        return;
+      }
+      if (action === 'save') {
+        var noteEl = document.getElementById('favNote');
+        saveFavorite(current, noteEl ? noteEl.value : '');
+        return;
+      }
+      if (action === 'remove') {
+        if (window.confirm('確定取消收藏這篇案例？註記會一起刪除。')) {
+          removeFavorite(current);
+        }
+        return;
+      }
+    }
+    var term = e.target.closest ? e.target.closest('.term') : null;
+    if (!term) { return; }
+    var item = document.getElementById(term.getAttribute('data-gloss'));
+    if (!item) { return; }
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var scroller = item.closest ? item.closest('.rail-sticky') : null;
+    if (scroller && scroller.scrollHeight > scroller.clientHeight + 1) {
+      var sRect = scroller.getBoundingClientRect();
+      var iRect = item.getBoundingClientRect();
+      var top = scroller.scrollTop + iRect.top - sRect.top -
+        (scroller.clientHeight / 2) + (iRect.height / 2);
+      try {
+        scroller.scrollTo({ top: Math.max(0, top), behavior: reduce ? 'auto' : 'smooth' });
+      } catch (err) {
+        scroller.scrollTop = Math.max(0, top);
+      }
+    } else {
+      try {
+        item.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+      } catch (err2) {
+        item.scrollIntoView();
+      }
+    }
+    try { item.focus({ preventScroll: true }); } catch (err3) { item.focus(); }
+    item.classList.add('is-flash');
+    clearTimeout(item._flashTimer);
+    item._flashTimer = setTimeout(function () { item.classList.remove('is-flash'); }, 1600);
+  });
+
+  favListEl.addEventListener('click', function (e) {
+    var link = e.target.closest ? e.target.closest('.fav-item-title') : null;
+    if (link) { state.backHash = '#/favorites'; return; }
+    var act = e.target.closest ? e.target.closest('[data-fav-act]') : null;
+    if (!act) { return; }
+    var item = act.closest('.fav-item');
+    var file = item ? item.getAttribute('data-file') : null;
+    if (!file) { return; }
+    var action = act.getAttribute('data-fav-act');
+    if (action === 'edit') {
+      state.editingFav = file;
+      renderFavorites();
+    } else if (action === 'cancel') {
+      state.editingFav = null;
+      renderFavorites();
+    } else if (action === 'remove') {
+      if (window.confirm('確定取消收藏這篇案例？註記會一起刪除。')) {
+        removeFavorite(file);
+      }
+    }
+  });
+
+  favListEl.addEventListener('submit', function (e) {
+    var form = e.target.closest ? e.target.closest('.fav-editor') : null;
+    if (!form) { return; }
+    e.preventDefault();
+    var file = form.getAttribute('data-editor');
+    var ta = form.querySelector('.fav-input');
+    if (file) { saveFavorite(file, ta ? ta.value : ''); }
+  });
+
+  favStateEl.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-auth]') : null;
+    if (btn) { openAuth(btn.getAttribute('data-auth') || 'login'); }
+  });
+
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportFavorites);
+  }
+
+  authAreaEl.addEventListener('click', function (e) {
+    var notifyBtn = e.target.closest ? e.target.closest('#notifyBtn') : null;
+    if (notifyBtn) {
+      setNotify(!state.notify.enabled);
+      return;
+    }
+    var btn = e.target.closest ? e.target.closest('#authBtn') : null;
+    if (!btn) { return; }
+    if (state.me) { logout(); } else { openAuth('login'); }
+  });
+
+  if (notifyToggleEl) {
+    notifyToggleEl.addEventListener('change', function () {
+      setNotify(notifyToggleEl.checked);
+    });
+  }
+
+  authForm.addEventListener('submit', submitAuth);
+  authTabLogin.addEventListener('click', function () { setAuthMode('login'); authEmail.focus(); });
+  authTabRegister.addEventListener('click', function () { setAuthMode('register'); authEmail.focus(); });
+  document.getElementById('authClose').addEventListener('click', closeAuth);
+  authDlg.addEventListener('close', function () { state.pendingFav = null; });
+
+  var timer = null;
+  qEl.addEventListener('input', function () {
+    clearTimeout(timer);
+    clearEl.hidden = !qEl.value;
+    qEl.classList.toggle('has-value', !!qEl.value);
+    toList();
+    timer = setTimeout(function () {
+      state.query = qEl.value.trim().toLowerCase();
+      applyFilter();
+    }, 120);
+  });
+
+  clearEl.addEventListener('click', function () {
+    qEl.value = '';
+    state.query = '';
+    toList();
+    applyFilter();
+    qEl.focus();
+  });
+
+  refreshBtn.addEventListener('click', function () {
+    refresh();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (authDlg.open) { return; }
+    if (e.key === '/' && document.activeElement !== qEl) {
+      e.preventDefault();
+      qEl.focus();
+    } else if (e.key === 'Escape' && document.activeElement === qEl) {
+      qEl.value = '';
+      state.query = '';
+      toList();
+      applyFilter();
+      qEl.blur();
+    }
+  });
+
+  setInterval(function () {
+    api('/api/cases').then(function (d) {
+      var a = state.cases.map(function (c) { return c.file; }).join('|');
+      var b = (d.cases || []).map(function (c) { return c.file; }).join('|');
+      if (a !== b) { refresh(); }
+    }).catch(function () {});
+  }, 60000);
+
+  if (!location.hash) { history.replaceState(null, '', '#/'); }
+  state.boot = true;
+  window.addEventListener('hashchange', function () { renderRoute(true); });
+  renderAuth();
+  refresh();
+  loadMe();
+})();
+</script>
+</body>
+</html>

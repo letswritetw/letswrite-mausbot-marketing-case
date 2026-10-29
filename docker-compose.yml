@@ -1,0 +1,25 @@
+services:
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: marketing-cases-public:local
+    ports:
+      - "127.0.0.1:${APP_PORT:-8801}:80"
+    environment:
+      DATA_DIR: /data
+      PORT: "80"
+      TZ: Asia/Taipei
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_TLS: ${SMTP_TLS:-starttls}
+      NOTIFY_POLL_SECONDS: ${NOTIFY_POLL_SECONDS:-300}
+      DASHBOARD_URL: ${DASHBOARD_URL:-http://localhost:8801/}
+      COOKIE_SECURE: ${COOKIE_SECURE:-0}
+    volumes:
+      - ./articles:/data/articles:ro
+      - ./db-data:/data/appdata
+    restart: unless-stopped

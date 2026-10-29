@@ -1,0 +1,13 @@
+__pycache__/
+*.pyc
+*.pyo
+*.log
+.DS_Store
+Thumbs.db
+
+# SQLite database and journals for favorites (runtime state, never committed)
+db-data/
+appdata/
+
+# Local SMTP credentials
+.env
